@@ -1,6 +1,6 @@
-h1. Программа стажировки по направлению Android
+# Программа стажировки по направлению Android
 
-h2. Общие вопросы:
+## Общие вопросы:
 
 * ООП
 * Паттерны проектирования (GoF)
@@ -10,7 +10,7 @@ h2. Общие вопросы:
 * Redmine (ведение проекта, задачи, статусы, время)
 * Gitlab Merge Request, Git Flow
 
-h2. Android
+## Android
 
 * Android Studio (интегрировать git, создать проект, подключить плагины)
 макетирование, прототипирование UI (zeplin, invisionapp, figma, mockingbot)
@@ -30,19 +30,17 @@ h2. Android
 * создание сервиса (на примере работы с push)
 * ContentProvider 
 * SharedPreference
-* Работа с внешними SDK (на примере, Google Maps API и Google Location API)
-анимации (начальные навыки)
+* Работа с внешними SDK (на примере, Google Maps API и Google Location API) анимации (начальные навыки)
 * Firebase Crash + Google Analytics (создать проект, подключить в код)
 * минификация (proguard)
 * сборка релиза, публикация в Play (alpha, beta, release)
-
 * UI-тесты
 * Unit-тесты
 * Сервис Firebase (БД, authentication, remote config)
 
-h2. Ссылки
+## Ссылки
 
-* ООП: ссылка
+* ООП: https://ru.wikipedia.org/wiki/Объектно-ориентированное_программирование
 * Паттерны проектирования: http://www.ozon.ru/context/detail/id/2457392/
 * Принципы SOLID: https://habrahabr.ru/post/208442/
 * Start Android: http://startandroid.ru/ru/uroki/vse-uroki-spiskom.html 
