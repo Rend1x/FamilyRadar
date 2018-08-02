@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">FamilyRadar</string>
+    <string name="app_name">Family Radar</string>
+    <string name="app_info">Please enter your name and phone number:</string>
+    <string name="login">Login</string>
+    <string name="your_name">Your name</string>
+    <string name="phone">Your phone number</string>
+    <string name="title_activity_maps">Family Radar</string>
 </resources>

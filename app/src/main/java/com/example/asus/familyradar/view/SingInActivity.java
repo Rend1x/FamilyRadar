@@ -1,7 +1,10 @@
-package com.example.asus.familyradar;
+package com.example.asus.familyradar.view;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.EditText;
+
+import com.example.asus.familyradar.R;
 
 public class SingInActivity extends AppCompatActivity {
 
