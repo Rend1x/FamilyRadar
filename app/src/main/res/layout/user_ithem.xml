@@ -12,34 +12,30 @@
 
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/messengerImageView"
+        android:id="@+id/itemUserImageView"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_margin="10dp"
         android:src="@drawable/ic_account_circle_black_36dp" />
 
-
-
-        <TextView
-            android:id="@+id/nameUser"
+    <TextView
+            android:id="@+id/itemNameUser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|center"
             android:paddingTop="5sp"
             android:layout_marginBottom="10dp"
-            android:text="@string/app_name"
-            android:textSize="18sp" />
+            android:textSize="19sp" />
 
     <TextView
-        android:id="@+id/phoneNumber"
+        android:id="@+id/itemEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|bottom"
-        android:text="@string/phone"
         android:textSize="16sp" />
 
     <CheckBox
-        android:id="@+id/checkBox2"
+        android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|end"

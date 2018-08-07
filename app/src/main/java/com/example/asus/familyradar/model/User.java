@@ -2,56 +2,69 @@ package com.example.asus.familyradar.model;
 
 public class User {
 
-    private String id;
+    private int id;
     private String name;
-    private int phoneNumber;
+    private String photo;
+    private String email;
     private double latitude;
     private double longitude;
 
-    private User(){}
-
-    private User(String id,String name, int phoneNumber, double latitude, double longitude){
-        this.id = id;
+    public User(String name, String email) {
         this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.email = email;
     }
 
-    public String getId() {
+    public User(){}
+
+    //Getter
+
+
+    public int getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getPhoto() {
+        return photo;
     }
 
-    public int getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(int phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public String getEmail() {
+        return email;
     }
 
     public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
     public double getLongitude() {
         return longitude;
+    }
+
+
+    //Setter
+
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
     public void setLongitude(double longitude) {

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".view.MapsActivity">
+
+    <item
+        android:id="@+id/add_user"
+        android:orderInCategory="100"
+        android:title="@string/add_friend"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/familyList"
+        android:orderInCategory="100"
+        android:title="@string/family_list" />
+    <item
+        android:id="@+id/logout"
+        android:orderInCategory="100"
+        android:title="@string/logout"
+        app:showAsAction="never" />
+
+</menu>
