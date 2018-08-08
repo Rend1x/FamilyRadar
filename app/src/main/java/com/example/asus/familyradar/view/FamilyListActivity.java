@@ -63,17 +63,6 @@ public class FamilyListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(familyListAdapter);
 
-        Intent intentThatStartedThisActivity = getIntent();
-
-        if (intentThatStartedThisActivity.hasExtra("NAME")) {
-
-            String email = getIntent().getExtras().getString("EMAIL");
-
-        }else{
-
-            Toast.makeText(this, "No API Data", Toast.LENGTH_SHORT).show();
-
-        }
         getDataFromSQLite();
 
     }

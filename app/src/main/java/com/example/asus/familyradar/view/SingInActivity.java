@@ -1,6 +1,9 @@
 package com.example.asus.familyradar.view;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.asus.familyradar.R;
 import com.example.asus.familyradar.model.SQlite.DatabaseHelper;
+import com.example.asus.familyradar.model.SQlite.FamilyListGoogle;
 import com.example.asus.familyradar.model.User;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -79,16 +83,15 @@ public class SingInActivity extends AppCompatActivity  implements GoogleApiClien
 
         user.setName(yourName.getText().toString().trim());
         user.setEmail(yourEmail.getText().toString().trim());
+        user.setPhoto(R.drawable.ic_account_circle_black_36dp);
+        user.setLatitude(1);
+        user.setLongitude(1);
 
         databaseHelper.addUser(user);
 
         Intent accountsIntent = new Intent(this, FamilyListActivity.class);
         Toast.makeText(this, "Registration Successful!", Toast.LENGTH_SHORT)
                 .show();
-
-        accountsIntent.putExtra("NAME", yourName.getText().toString().trim());
-        accountsIntent.putExtra("EMAIL", yourEmail.getText().toString().trim());
-
         startActivity(accountsIntent);
 
     }

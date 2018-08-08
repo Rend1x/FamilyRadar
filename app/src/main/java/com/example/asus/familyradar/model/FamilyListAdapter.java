@@ -42,14 +42,14 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
         holder.userName.setText(userList.get(position).getName());
         holder.userEmail.setText(userList.get(position).getEmail());
 
-//        if (userList.get(position).getPhoto() == null) {
-//            holder.userPhoto.setImageDrawable(ContextCompat.getDrawable(context,
-//                    R.drawable.ic_account_circle_black_36dp));
-//        } else {
-//            Glide.with(holder.userPhoto.getContext())
-//                    .load(userList.get(position).getPhoto())
-//                    .into(holder.userPhoto);
-//        }
+        if (userList.get(position).getPhoto() == 0) {
+            holder.userPhoto.setImageDrawable(ContextCompat.getDrawable(context,
+                    R.drawable.ic_account_circle_black_36dp));
+        } else {
+            Glide.with(holder.userPhoto.getContext())
+                    .load(userList.get(position).getPhoto())
+                    .into(holder.userPhoto);
+        }
 
     }
 
@@ -62,14 +62,14 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
 
         private TextView userName;
         private TextView userEmail;
-//        private CircleImageView userPhoto;
+        private CircleImageView userPhoto;
 
         private ViewHolder(View item) {
             super(item);
 
             userName = (TextView) item.findViewById(R.id.itemNameUser);
             userEmail = (TextView) item.findViewById(R.id.itemEmail);
-//            userPhoto = (CircleImageView) item.findViewById(R.id.itemUserImageView);
+            userPhoto = (CircleImageView) item.findViewById(R.id.itemUserImageView);
 
         }
     }

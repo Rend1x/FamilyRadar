@@ -5,18 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.asus.familyradar.model.User;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private DatabaseHelper DBHelper;
-    private SQLiteDatabase db;
+    private SQLiteDatabase database;
 
     private static final int DATABASE_VERSION = 1;
 
@@ -31,8 +28,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
         final String SQL_CREATE_FAVORITE_TABLE = "CREATE TABLE " + FamilyListGoogle.FamilyListEntry.TABLE_NAME + " (" +
+                FamilyListGoogle.FamilyListEntry.COLUMN_ID + " INTEGER PRIMARY KEY, " +
                 FamilyListGoogle.FamilyListEntry.COLUMN_NAME + " TEXT NOT NULL, " +
-                FamilyListGoogle.FamilyListEntry.COLUMN_EMAIL + " TEXT NOT NULL " +
+                FamilyListGoogle.FamilyListEntry.COLUMN_EMAIL + " TEXT NOT NULL, " +
+                FamilyListGoogle.FamilyListEntry.COLUMN_PHOTO + " INTEGER, " +
+                FamilyListGoogle.FamilyListEntry.COLUMN_LATITUDE + " INTEGER, " +
+                FamilyListGoogle.FamilyListEntry.COLUMN_LONGITUDE + " INTEGER " +
                 "); ";
 
         sqLiteDatabase.execSQL(SQL_CREATE_FAVORITE_TABLE);
@@ -48,29 +49,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public DatabaseHelper open() throws SQLException
-    {
-        db = DBHelper.getWritableDatabase();
-        return this;
-    }
-
-    public void close()
-    {
-        DBHelper.close();
-    }
 
     public void addUser(User family) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
+        ContentValues contentValues = new ContentValues();
 
-        values.put(FamilyListGoogle.FamilyListEntry.COLUMN_NAME, family.getName());
-        values.put(FamilyListGoogle.FamilyListEntry.COLUMN_EMAIL, family.getEmail());
+        contentValues.put(FamilyListGoogle.FamilyListEntry.COLUMN_NAME,family.getName());
+        contentValues.put(FamilyListGoogle.FamilyListEntry.COLUMN_EMAIL,family.getEmail());
+        contentValues.put(FamilyListGoogle.FamilyListEntry.COLUMN_PHOTO,family.getPhoto());
+        contentValues.put(FamilyListGoogle.FamilyListEntry.COLUMN_LATITUDE,family.getLatitude());
+        contentValues.put(FamilyListGoogle.FamilyListEntry.COLUMN_LONGITUDE,family.getLongitude());
 
 
-        db.insert(FamilyListGoogle.FamilyListEntry.TABLE_NAME, null, values);
-        db.close();
+        db.insert(FamilyListGoogle.FamilyListEntry.TABLE_NAME, null, contentValues);
+
+
     }
 
     public ArrayList<User> getAllBeneficiary() {
@@ -88,10 +83,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ArrayList<User> userList = new ArrayList<>();
 
-        db = this.getReadableDatabase();
+        database = this.getReadableDatabase();
 
 
-        Cursor cursor = db.query(FamilyListGoogle.FamilyListEntry.TABLE_NAME,
+        Cursor cursor = database.query(FamilyListGoogle.FamilyListEntry.TABLE_NAME,
                 columns,
                 null,
                 null,
@@ -112,7 +107,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        db.close();
+        database.close();
 
         return userList;
 
