@@ -43,9 +43,6 @@ public class SingInActivity extends AppCompatActivity  implements GoogleApiClien
 
     private FirebaseAuth mFirebaseAuth;
 
-    private User user;
-    private DatabaseHelper databaseHelper;
-
     private EditText yourName;
     private EditText yourEmail;
 
@@ -57,48 +54,17 @@ public class SingInActivity extends AppCompatActivity  implements GoogleApiClien
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sing_in);
 
-
-        yourName = (EditText) findViewById(R.id.enter_name);
-        yourEmail = (EditText) findViewById(R.id.enter_email);
-        singInGoogle = (Button) findViewById(R.id.login_button_google);
-        mSingIn = (Button) findViewById(R.id.singInButton);
-
         init();
-        initObjects();
-
 
         mSingIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                postDataToSQLite();
+
             }
         });
 
         singInGoogle.setOnClickListener(this);
 
-
-    }
-
-    private void postDataToSQLite() {
-
-        user.setName(yourName.getText().toString().trim());
-        user.setEmail(yourEmail.getText().toString().trim());
-        user.setPhoto(R.drawable.ic_account_circle_black_36dp);
-        user.setLatitude(1);
-        user.setLongitude(1);
-
-        databaseHelper.addUser(user);
-
-        Intent accountsIntent = new Intent(this, FamilyListActivity.class);
-        Toast.makeText(this, "Registration Successful!", Toast.LENGTH_SHORT)
-                .show();
-        startActivity(accountsIntent);
-
-    }
-
-    private void initObjects() {
-        databaseHelper = new DatabaseHelper(SingInActivity.this);
-        user = new User();
     }
 
     @Override
@@ -113,6 +79,12 @@ public class SingInActivity extends AppCompatActivity  implements GoogleApiClien
     }
 
     private void init(){
+
+        yourName = (EditText) findViewById(R.id.enter_name);
+        yourEmail = (EditText) findViewById(R.id.enter_email);
+        singInGoogle = (Button) findViewById(R.id.login_button_google);
+        mSingIn = (Button) findViewById(R.id.singInButton);
+
         googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()

@@ -1,7 +1,6 @@
-package com.example.asus.familyradar.model;
+package com.example.asus.familyradar.model.adapter;
 
 import android.content.Context;
-import android.icu.lang.UScript;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.asus.familyradar.R;
+import com.example.asus.familyradar.model.User;
 
 import java.util.List;
 

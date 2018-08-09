@@ -12,4 +12,6 @@
     <string name="authGoogle" translatable="false">Войти через Google</string>
     <string name="title_activity_login" translatable="false">Войти</string>
     <string name="title_activity_maps">Семейный Радар</string>
+    <string name="add_friend_info">Введите E-mail друга</string>
+    <string name="add_friend_name">Имя</string>
 </resources>

@@ -11,4 +11,6 @@
     <string name="or">OR</string>
     <string name="authGoogle">Sign in through Google</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="add_friend_info">Enter email your friend</string>
+    <string name="add_friend_name">Name</string>
 </resources>

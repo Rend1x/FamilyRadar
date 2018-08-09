@@ -2,11 +2,11 @@ package com.example.asus.familyradar.view;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -16,58 +16,34 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.asus.familyradar.R;
-import com.example.asus.familyradar.model.FamilyListAdapter;
+import com.example.asus.familyradar.model.adapter.FamilyListAdapter;
 import com.example.asus.familyradar.model.SQlite.DatabaseHelper;
 import com.example.asus.familyradar.model.User;
+import com.example.asus.familyradar.model.adapter.ViewPageAdapter;
+import com.example.asus.familyradar.view.fragment.AddFriendFragment;
+import com.example.asus.familyradar.view.fragment.FamilyListFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.security.AccessController.getContext;
-
 public class FamilyListActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
-    private RecyclerView recyclerView;
-    private List<User> listUser;
-    private DatabaseHelper databaseHelper;
-    private SQLiteDatabase sqLiteDatabase;
-    private User user;
-    FamilyListAdapter familyListAdapter;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private ViewPageAdapter viewPageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_family_list);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.inflateMenu(R.menu.main_menu);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-
-        databaseHelper = new DatabaseHelper(this);
-        sqLiteDatabase = databaseHelper.getWritableDatabase();
-
-        listUser = new ArrayList<>();
-
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        familyListAdapter = new FamilyListAdapter(getApplicationContext(),listUser);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(familyListAdapter);
-
-        getDataFromSQLite();
+        initToolbar();
+        initTabBar();
 
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -101,23 +77,32 @@ public class FamilyListActivity extends AppCompatActivity {
         return true;
     }
 
-    private void getDataFromSQLite() {
+    private void initToolbar(){
 
-         new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                listUser.clear();
-                listUser.addAll(databaseHelper.getAllBeneficiary());
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.main_menu);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-                return null;
-            }
+    }
 
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                familyListAdapter.notifyDataSetChanged();
-            }
-        }.execute();
+    public void initTabBar(){
+
+        tabLayout  = (TabLayout) findViewById(R.id.tabLayout);
+        viewPager = (ViewPager) findViewById(R.id.viewPage);
+        viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager());
+
+        viewPageAdapter.AddFragment(new FamilyListFragment(),"");
+        viewPageAdapter.AddFragment(new AddFriendFragment(),"");
+
+        viewPager.setAdapter(viewPageAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_format_list);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_add);
+
+
     }
 
 }
