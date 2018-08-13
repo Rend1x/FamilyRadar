@@ -61,11 +61,11 @@ public class AddFriendFragment extends Fragment {
 
         user.setName(friendName.getText().toString().trim());
         user.setEmail(friendEmail.getText().toString().trim());
-        user.setPhoto(R.drawable.ic_account_circle_black_36dp);
+        user.setPhoto(String.valueOf(R.drawable.ic_account_circle_black_36dp));
         user.setLatitude(1);
         user.setLongitude(1);
 
-        databaseHelper.addUser(user);
+        databaseHelper.addFamily(user);
 
         Intent accountsIntent = new Intent(getActivity(), FamilyListActivity.class);
         Toast.makeText(getActivity(), "Add Successful!", Toast.LENGTH_SHORT)
@@ -84,6 +84,5 @@ public class AddFriendFragment extends Fragment {
         databaseHelper = new DatabaseHelper(getContext());
         user = new User();
     }
-
 
 }

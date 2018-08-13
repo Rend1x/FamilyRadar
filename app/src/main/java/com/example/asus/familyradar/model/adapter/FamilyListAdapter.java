@@ -42,7 +42,7 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
         holder.userName.setText(userList.get(position).getName());
         holder.userEmail.setText(userList.get(position).getEmail());
 
-        if (userList.get(position).getPhoto() == 0) {
+        if (userList.get(position).getPhoto() == null) {
             holder.userPhoto.setImageDrawable(ContextCompat.getDrawable(context,
                     R.drawable.ic_account_circle_black_36dp));
         } else {

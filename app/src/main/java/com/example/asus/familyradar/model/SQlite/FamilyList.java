@@ -2,7 +2,7 @@ package com.example.asus.familyradar.model.SQlite;
 
 import android.provider.BaseColumns;
 
-public class FamilyListGoogle {
+public class FamilyList {
 
     public static final class FamilyListEntry implements BaseColumns {
 

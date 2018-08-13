@@ -17,6 +17,7 @@
 
     <style name="MyHintText" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">19sp</item>
     </style>
 
     <style name="MyEditText" parent="Theme.AppCompat.Light.NoActionBar">

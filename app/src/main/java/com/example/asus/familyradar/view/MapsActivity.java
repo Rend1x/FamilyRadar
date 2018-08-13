@@ -1,48 +1,38 @@
 package com.example.asus.familyradar.view;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.asus.familyradar.R;
 import com.example.asus.familyradar.model.SQlite.DatabaseHelper;
+import com.example.asus.familyradar.model.SQlite.UserList;
 import com.example.asus.familyradar.model.User;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationAvailability;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 
-import com.example.asus.familyradar.view.SingInActivity;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.util.Date;
 
 public class MapsActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -62,18 +52,35 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.O
     private double Longitude;
     private Toolbar toolbar;
 
+    private DatabaseHelper databaseHelper;
+    private User user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        init();
+        initSQl();
+        isSignedIn();
+
+    }
+
+    private void init() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main_menu);
         setSupportActionBar(toolbar);
         setUpMapIfNeeded();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         firebaseAuth = FirebaseAuth.getInstance();
-        isSignedIn();
+        mUsername = ANONYMOUS;
+        mFirebaseUser = firebaseAuth.getCurrentUser();
+    }
+
+    private void initSQl(){
+        databaseHelper = new DatabaseHelper(this);
+        user = new User();
     }
 
     @Override
@@ -89,7 +96,10 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.O
         switch (item.getItemId()){
 
             case R.id.add_user:
-                Toast.makeText(this,"ADD",Toast.LENGTH_LONG).show();
+                postDataToDataBase();
+                break;
+            case R.id.refresh:
+                updateDataToSql();
                 break;
             case R.id.familyList:
                 Intent family = new Intent(this,FamilyListActivity.class);
@@ -106,6 +116,55 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         return true;
+    }
+
+    private void delete() {
+
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+
+        database.delete(UserList.UserListEntry.TABLE_NAME, null, null);
+
+    }
+
+    private void updateDataToSql() {
+
+        user.setLatitude(Latitude);
+        user.setLongitude(Longitude);
+
+        databaseHelper.updateUser(user);
+
+        Toast.makeText(this, "Refresh Successful!", Toast.LENGTH_SHORT).show();
+
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+
+        Cursor cursor = database.query(UserList.UserListEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        if (cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_ID);
+            int nameIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_NAME);
+            int emailIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_EMAIL);
+            int photoIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_PHOTO);
+            int latitide = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_LATITUDE);
+            int longitude = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_LONGITUDE);
+            do {
+                Log.d("mLog", "ID = " + cursor.getInt(idIndex) +
+                        ", name = " + cursor.getString(nameIndex) +
+                        ", email = " + cursor.getString(emailIndex)+
+                        ", photo =  " + cursor.getString(photoIndex)+
+                        ", latitude = " + cursor.getDouble(latitide)+
+                        ", longitude = " + cursor.getDouble(longitude));
+            } while (cursor.moveToNext());
+        } else
+            Log.d("mLog","0 rows");
+
+        cursor.close();
+
     }
 
     @SuppressLint("MissingPermission")
@@ -183,6 +242,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.O
             //tvLocationNet.setText(formatLocation(location));
             Latitude = location.getLatitude();
             Longitude = location.getLongitude();
+
         }
     }
 
@@ -196,10 +256,52 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.O
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinate, 0));
     }
 
-    private void isSignedIn(){
+    private void postDataToDataBase(){
 
-        mUsername = ANONYMOUS;
-        mFirebaseUser = firebaseAuth.getCurrentUser();
+        user.setName(mFirebaseUser.getDisplayName());
+        user.setEmail(mFirebaseUser.getEmail());
+        user.setPhoto(mFirebaseUser.getPhotoUrl().toString());
+        user.setLatitude(Latitude);
+        user.setLongitude(Longitude);
+
+        databaseHelper.addUser(user);
+
+        Toast.makeText(this, "Refresh Successful!", Toast.LENGTH_SHORT).show();
+
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+
+        Cursor cursor = database.query(UserList.UserListEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        if (cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_ID);
+            int nameIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_NAME);
+            int emailIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_EMAIL);
+            int photoIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_PHOTO);
+            int latitide = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_LATITUDE);
+            int longitude = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_LONGITUDE);
+            do {
+                Log.d("mLog", "ID = " + cursor.getInt(idIndex) +
+                        ", name = " + cursor.getString(nameIndex) +
+                        ", email = " + cursor.getString(emailIndex)+
+                        ", photo =  " + cursor.getString(photoIndex)+
+                        ", latitude = " + cursor.getDouble(latitide)+
+                        ", longitude = " + cursor.getDouble(longitude));
+            } while (cursor.moveToNext());
+        } else
+            Log.d("mLog","0 rows");
+
+        cursor.close();
+
+    }
+
+
+    private void isSignedIn(){
 
         if (mFirebaseUser == null) {
             startActivity(new Intent(this, SingInActivity.class));

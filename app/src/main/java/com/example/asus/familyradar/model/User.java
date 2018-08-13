@@ -4,10 +4,20 @@ public class User {
 
     private int id;
     private String name;
-    private int photo;
+    private String photo;
     private String email;
     private double latitude;
     private double longitude;
+
+    public User(String name, String photo, String email, double latitude, double longitude) {
+        this.name = name;
+        this.photo = photo;
+        this.email = email;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public User(){}
 
 
     //Getter
@@ -21,7 +31,7 @@ public class User {
         return name;
     }
 
-    public int getPhoto() {
+    public String getPhoto() {
         return photo;
     }
 
@@ -49,7 +59,7 @@ public class User {
         this.name = name;
     }
 
-    public void setPhoto(int photo) {
+    public void setPhoto(String photo) {
         this.photo = photo;
     }
 
