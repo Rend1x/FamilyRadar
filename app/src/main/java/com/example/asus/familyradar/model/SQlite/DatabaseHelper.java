@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.asus.familyradar.model.User;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
@@ -28,8 +29,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             UserList.UserListEntry.COLUMN_USER_NAME + " TEXT NOT NULL, " +
             UserList.UserListEntry.COLUMN_USER_EMAIL + " TEXT NOT NULL UNIQUE, " +
             UserList.UserListEntry.COLUMN_USER_PHOTO + " TEXT, " +
-            UserList.UserListEntry.COLUMN_USER_LATITUDE + " INTEGER, " +
-            UserList.UserListEntry.COLUMN_USER_LONGITUDE + " INTEGER, " +
+            UserList.UserListEntry.COLUMN_USER_LATITUDE + " DOUBLE, " +
+            UserList.UserListEntry.COLUMN_USER_LONGITUDE + " DOUBLE, " +
             "UNIQUE (" + UserList.UserListEntry.COLUMN_USER_EMAIL + ") ON CONFLICT IGNORE " +
             "); ";
 
@@ -38,8 +39,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             FamilyList.FamilyListEntry.COLUMN_NAME + " TEXT NOT NULL, " +
             FamilyList.FamilyListEntry.COLUMN_EMAIL + " TEXT NOT NULL, " +
             FamilyList.FamilyListEntry.COLUMN_PHOTO + " INTEGER, " +
-            FamilyList.FamilyListEntry.COLUMN_LATITUDE + " INTEGER, " +
-            FamilyList.FamilyListEntry.COLUMN_LONGITUDE + " INTEGER " +
+            FamilyList.FamilyListEntry.COLUMN_LATITUDE + " DOUBLE, " +
+            FamilyList.FamilyListEntry.COLUMN_LONGITUDE + " DOUBLE " +
             "); ";
 
 
@@ -88,6 +89,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 FamilyList.FamilyListEntry.COLUMN_NAME,
                 FamilyList.FamilyListEntry.COLUMN_EMAIL,
+                FamilyList.FamilyListEntry.COLUMN_PHOTO,
 
         };
 
@@ -114,6 +116,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 user.setName(cursor.getString(cursor.getColumnIndex(FamilyList.FamilyListEntry.COLUMN_NAME)));
                 user.setEmail(cursor.getString(cursor.getColumnIndex(FamilyList.FamilyListEntry.COLUMN_EMAIL)));
+                user.setPhoto(cursor.getString(cursor.getColumnIndex(FamilyList.FamilyListEntry.COLUMN_PHOTO)));
 
                 userList.add(user);
 
@@ -126,6 +129,54 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public ArrayList<LatLng> getFamilyPlace() {
+
+
+        String[] columns = {
+
+                FamilyList.FamilyListEntry.COLUMN_NAME,
+                FamilyList.FamilyListEntry.COLUMN_LATITUDE,
+                FamilyList.FamilyListEntry.COLUMN_LONGITUDE,
+
+        };
+
+        String sortOrder =
+                FamilyList.FamilyListEntry.COLUMN_NAME + " ASC";
+
+        ArrayList<LatLng> userList = new ArrayList<>();
+
+        database = this.getReadableDatabase();
+
+
+        Cursor cursor = database.query(FamilyList.FamilyListEntry.TABLE_NAME,
+                columns,
+                null,
+                null,
+                null,
+                null,
+                sortOrder);
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                User user = new User();
+
+                user.setLatitude(cursor.getDouble(cursor.getColumnIndex(FamilyList.FamilyListEntry.COLUMN_LATITUDE)));
+                user.setLongitude(cursor.getDouble(cursor.getColumnIndex(FamilyList.FamilyListEntry.COLUMN_LONGITUDE)));
+
+                userList.add(new LatLng(user.getLatitude(),user.getLongitude()));
+
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        database.close();
+
+        return userList;
+
+    }
+
+
     public void addUser(User user) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -137,7 +188,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(UserList.UserListEntry.COLUMN_USER_PHOTO,user.getPhoto());
         contentValues.put(UserList.UserListEntry.COLUMN_USER_LATITUDE,user.getLatitude());
         contentValues.put(UserList.UserListEntry.COLUMN_USER_LONGITUDE,user.getLongitude());
-
 
         db.insert(UserList.UserListEntry.TABLE_NAME, null, contentValues);
 
@@ -152,7 +202,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         contentValues.put(UserList.UserListEntry.COLUMN_USER_LATITUDE,user.getLatitude());
         contentValues.put(UserList.UserListEntry.COLUMN_USER_LONGITUDE,user.getLongitude());
-
 
         db.update(UserList.UserListEntry.TABLE_NAME, contentValues,null,null);
     }

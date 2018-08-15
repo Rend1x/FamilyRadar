@@ -62,8 +62,8 @@ public class AddFriendFragment extends Fragment {
         user.setName(friendName.getText().toString().trim());
         user.setEmail(friendEmail.getText().toString().trim());
         user.setPhoto(String.valueOf(R.drawable.ic_account_circle_black_36dp));
-        user.setLatitude(1);
-        user.setLongitude(1);
+        user.setLatitude(45.111);
+        user.setLongitude(33.111);
 
         databaseHelper.addFamily(user);
 
