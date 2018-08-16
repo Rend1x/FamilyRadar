@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_weight="0.5"
+        android:layout_weight="0.3"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -24,36 +24,16 @@
             android:id="@+id/addFriendTextInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="60dp"
             android:text="@string/add_friend_info"
             android:theme="@style/MyTextViewInfo" />
-
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/add_name_friend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            app:hintTextAppearance="@style/MyHintText">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/enter_name_friend"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/add_friend_name"
-                android:inputType="textPersonName"
-                android:textColor="@color/colorPrimary"
-                android:theme="@style/MyEditText" />
-
-        </android.support.design.widget.TextInputLayout>
 
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/add_email_friend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="60dp"
             app:hintTextAppearance="@style/MyHintText">
 
             <android.support.design.widget.TextInputEditText

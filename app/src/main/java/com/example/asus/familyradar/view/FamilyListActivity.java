@@ -57,9 +57,6 @@ public class FamilyListActivity extends AppCompatActivity {
 
         switch (item.getItemId()){
 
-            case R.id.add_user:
-                Toast.makeText(this,"Add users",Toast.LENGTH_LONG).show();
-                break;
             case R.id.familyList:
                 Intent family = new Intent(this,FamilyListActivity.class);
                 startActivity(family);

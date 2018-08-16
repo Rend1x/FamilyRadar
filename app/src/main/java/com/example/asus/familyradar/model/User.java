@@ -19,9 +19,7 @@ public class User {
 
     public User(){}
 
-
     //Getter
-
 
     public int getId() {
         return id;
@@ -47,9 +45,7 @@ public class User {
         return longitude;
     }
 
-
     //Setter
-
 
     public void setId(int id) {
         this.id = id;

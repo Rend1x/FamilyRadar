@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.asus.familyradar.model.User;
 import com.google.android.gms.maps.model.LatLng;
@@ -64,22 +65,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public void addFamily(User family) {
+    public void addFamily(String email) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues contentValues = new ContentValues();
+        final String ADD_FAMILY =
+                "INSERT INTO " + FamilyList.FamilyListEntry.TABLE_NAME + " ("
+                        + FamilyList.FamilyListEntry.COLUMN_NAME + ", "
+                        + FamilyList.FamilyListEntry.COLUMN_EMAIL +", "
+                        + FamilyList.FamilyListEntry.COLUMN_PHOTO + ", "
+                        + FamilyList.FamilyListEntry.COLUMN_LATITUDE + ", "
+                        + FamilyList.FamilyListEntry.COLUMN_LONGITUDE + ") "
+                        + " SELECT "
+                        + UserList.UserListEntry.COLUMN_USER_NAME + ", "
+                        + UserList.UserListEntry.COLUMN_USER_EMAIL + ", "
+                        + UserList.UserListEntry.COLUMN_USER_PHOTO + ", "
+                        + UserList.UserListEntry.COLUMN_USER_LATITUDE + ", "
+                        + UserList.UserListEntry.COLUMN_USER_LONGITUDE
+                        + " FROM " + UserList.UserListEntry.TABLE_NAME
+                        + " WHERE " + UserList.UserListEntry.COLUMN_USER_EMAIL + " =\'" + email + "\'";
 
-        contentValues.put(FamilyList.FamilyListEntry.COLUMN_NAME,family.getName());
-        contentValues.put(FamilyList.FamilyListEntry.COLUMN_EMAIL,family.getEmail());
-        contentValues.put(FamilyList.FamilyListEntry.COLUMN_PHOTO,family.getPhoto());
-        contentValues.put(FamilyList.FamilyListEntry.COLUMN_LATITUDE,family.getLatitude());
-        contentValues.put(FamilyList.FamilyListEntry.COLUMN_LONGITUDE,family.getLongitude());
-
-
-        db.insert(FamilyList.FamilyListEntry.TABLE_NAME, null, contentValues);
-
-
+        db.execSQL(ADD_FAMILY);
     }
 
     public ArrayList<User> getAllBeneficiary() {
@@ -134,7 +140,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String[] columns = {
 
-                FamilyList.FamilyListEntry.COLUMN_NAME,
                 FamilyList.FamilyListEntry.COLUMN_LATITUDE,
                 FamilyList.FamilyListEntry.COLUMN_LONGITUDE,
 
@@ -176,7 +181,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-
     public void addUser(User user) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -204,5 +208,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(UserList.UserListEntry.COLUMN_USER_LONGITUDE,user.getLongitude());
 
         db.update(UserList.UserListEntry.TABLE_NAME, contentValues,null,null);
+    }
+
+    public boolean checkEmailFamily(String email) {
+
+            SQLiteDatabase database = getWritableDatabase();
+
+            String selectQuery = "SELECT  * FROM " + FamilyList.FamilyListEntry.TABLE_NAME + " WHERE "
+                    + FamilyList.FamilyListEntry.COLUMN_EMAIL + " =? ";
+            Cursor cursor = database.rawQuery(selectQuery, new String[]{email});
+            boolean checkEmailFamily = false;
+            if (cursor.moveToFirst()) {
+                checkEmailFamily = true;
+                int count = 0;
+                while(cursor.moveToNext()){
+                    count++;
+                }
+                Log.d("dataBase", String.format("%d records found", count));
+            }
+            cursor.close();
+            database.close();
+            return checkEmailFamily;
+    }
+
+    public boolean checkEmailUser(String email) {
+
+        SQLiteDatabase database = getWritableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + UserList.UserListEntry.TABLE_NAME + " WHERE "
+                + UserList.UserListEntry.COLUMN_USER_EMAIL + " =? ";
+        Cursor cursor = database.rawQuery(selectQuery, new String[]{email});
+        boolean checkEmailUser = false;
+        if (cursor.moveToFirst()) {
+            checkEmailUser = true;
+            int count = 0;
+            while(cursor.moveToNext()){
+                count++;
+            }
+            Log.d("dataBase", String.format("%d records found", count));
+        }
+        cursor.close();
+        database.close();
+        return checkEmailUser;
     }
 }

@@ -61,7 +61,6 @@ public class MapsActivity
     private final static String[] PERMISSIONS = {android.Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION};
 
-
     private GoogleMap mMap;
 
     private FirebaseAuth firebaseAuth;
@@ -79,8 +78,6 @@ public class MapsActivity
 
     private List<LatLng> familyPlace;
 
-    private String mPhotoUrl;
-
     private Toolbar toolbar;
 
     private DatabaseHelper databaseHelper;
@@ -96,7 +93,6 @@ public class MapsActivity
         init();
         initSQl();
 
-
     }
 
     private void init() {
@@ -104,7 +100,6 @@ public class MapsActivity
         toolbar.inflateMenu(R.menu.main_menu);
         setSupportActionBar(toolbar);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
     }
 
     private void initSQl(){
@@ -127,12 +122,6 @@ public class MapsActivity
 
         switch (item.getItemId()){
 
-            case R.id.add_user:
-                postDataToDataBase();
-                break;
-            case R.id.refresh:
-                updateDataToSql();
-                break;
             case R.id.familyList:
                 Intent family = new Intent(this,FamilyListActivity.class);
                 startActivity(family);
@@ -150,53 +139,12 @@ public class MapsActivity
         return true;
     }
 
-    private void delete() {
-
-        SQLiteDatabase database = databaseHelper.getWritableDatabase();
-
-        database.delete(UserList.UserListEntry.TABLE_NAME, null, null);
-
-    }
-
     private void updateDataToSql() {
 
         user.setLatitude(latitude);
         user.setLongitude(longitude);
 
         databaseHelper.updateUser(user);
-
-        Toast.makeText(this, "Refresh Successful!", Toast.LENGTH_SHORT).show();
-
-        SQLiteDatabase database = databaseHelper.getWritableDatabase();
-
-        Cursor cursor = database.query(UserList.UserListEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
-
-        if (cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_ID);
-            int nameIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_NAME);
-            int emailIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_EMAIL);
-            int photoIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_PHOTO);
-            int latitide = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_LATITUDE);
-            int longitude = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_LONGITUDE);
-            do {
-                Log.d("mLog", "ID = " + cursor.getInt(idIndex) +
-                        ", name = " + cursor.getString(nameIndex) +
-                        ", email = " + cursor.getString(emailIndex)+
-                        ", photo =  " + cursor.getString(photoIndex)+
-                        ", latitude = " + cursor.getDouble(latitide)+
-                        ", longitude = " + cursor.getDouble(longitude));
-            } while (cursor.moveToNext());
-        } else
-            Log.d("mLog","0 rows");
-
-        cursor.close();
-
     }
 
     @SuppressLint("MissingPermission")
@@ -204,6 +152,7 @@ public class MapsActivity
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+        postDataToDataBase();
     }
 
     private void setUpMapIfNeeded() {
@@ -241,40 +190,18 @@ public class MapsActivity
         user.setLatitude(latitude);
         user.setLongitude(longitude);
 
-        databaseHelper.addUser(user);
+        if (databaseHelper.checkEmailUser(user.getEmail()) == true){
 
-        Toast.makeText(this, "Refresh Successful!", Toast.LENGTH_SHORT).show();
+            updateDataToSql();
+            Toast.makeText(this, "Refresh Successful!", Toast.LENGTH_SHORT).show();
 
-        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        }else {
 
-        Cursor cursor = database.query(UserList.UserListEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
+            databaseHelper.addUser(user);
 
-        if (cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_ID);
-            int nameIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_NAME);
-            int emailIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_EMAIL);
-            int photoIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_PHOTO);
-            int latitide = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_LATITUDE);
-            int longitude = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_LONGITUDE);
-            do {
-                Log.d("mLog", "ID = " + cursor.getInt(idIndex) +
-                        ", name = " + cursor.getString(nameIndex) +
-                        ", email = " + cursor.getString(emailIndex)+
-                        ", photo =  " + cursor.getString(photoIndex)+
-                        ", latitude = " + cursor.getDouble(latitide)+
-                        ", longitude = " + cursor.getDouble(longitude));
-            } while (cursor.moveToNext());
-        } else
-            Log.d("mLog","0 rows");
+            Toast.makeText(this, "Add Successful!", Toast.LENGTH_SHORT).show();
 
-        cursor.close();
-
+        }
     }
 
 
