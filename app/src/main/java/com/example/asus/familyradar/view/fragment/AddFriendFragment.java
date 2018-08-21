@@ -16,9 +16,9 @@ import android.widget.Toast;
 
 import com.example.asus.familyradar.R;
 import com.example.asus.familyradar.model.SQlite.DatabaseHelper;
-import com.example.asus.familyradar.model.SQlite.FamilyList;
 import com.example.asus.familyradar.model.User;
 import com.example.asus.familyradar.view.FamilyListActivity;
+import com.example.asus.familyradar.model.SQlite.FamilyList.FamilyListEntry;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -27,6 +27,8 @@ import java.util.List;
 
 
 public class AddFriendFragment extends Fragment {
+
+    private final static String TAG = "AddFriendFragment";
 
     private View view;
     private EditText friendEmail;
@@ -66,7 +68,37 @@ public class AddFriendFragment extends Fragment {
             }
         });
 
-        Log.d("addFriend","Массив " + listUser.size());
+        Log.d(TAG,"Массив " + listUser.size());
+
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+
+        Cursor cursor = database.query(FamilyListEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        if (cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_ID);
+            int nameIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_NAME);
+            int emailIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_EMAIL);
+            int photoIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_PHOTO);
+            int latitide = cursor.getColumnIndex(FamilyListEntry.COLUMN_LATITUDE);
+            int longitude = cursor.getColumnIndex(FamilyListEntry.COLUMN_LONGITUDE);
+            do {
+                Log.d(TAG, "ID = " + cursor.getInt(idIndex) +
+                        ", name = " + cursor.getString(nameIndex) +
+                        ", email = " + cursor.getString(emailIndex)+
+                        ", photo =  " + cursor.getString(photoIndex)+
+                        ", latitude = " + cursor.getDouble(latitide)+
+                        ", longitude = " + cursor.getDouble(longitude));
+            } while (cursor.moveToNext());
+        } else
+            Log.d(TAG,"0 rows");
+
+        cursor.close();
 
         return view;
     }
@@ -75,9 +107,9 @@ public class AddFriendFragment extends Fragment {
 
         user.setEmail(friendEmail.getText().toString().trim());
 
-        Log.d("addFriend","Email " + user.getEmail());
+        Log.d(TAG,"Email " + user.getEmail());
 
-        if (databaseHelper.checkEmailUser(user.getEmail()) == true && databaseHelper.checkEmailFamily(user.getEmail()) == false){
+        if (databaseHelper.checkEmailUser(user.getEmail())&& !databaseHelper.checkEmailFamily(user.getEmail())){
 
             databaseHelper.addFamily(user.getEmail());
 
@@ -87,11 +119,11 @@ public class AddFriendFragment extends Fragment {
                     .show();
             startActivity(accountsIntent);
 
-        }else if(databaseHelper.checkEmailUser(user.getEmail()) == false){
+        }else if(!databaseHelper.checkEmailUser(user.getEmail())){
 
             Toast.makeText(getActivity(),"Нет такого пользователя",Toast.LENGTH_SHORT).show();
 
-        }else if (databaseHelper.checkEmailFamily(user.getEmail()) == true){
+        }else if (databaseHelper.checkEmailFamily(user.getEmail())){
 
             Toast.makeText(getActivity(),"Этот пользователь есть в списке друзей",Toast.LENGTH_SHORT).show();
 
@@ -103,7 +135,7 @@ public class AddFriendFragment extends Fragment {
 
         SQLiteDatabase database = databaseHelper.getWritableDatabase();
 
-        Cursor cursor = database.query(FamilyList.FamilyListEntry.TABLE_NAME,
+        Cursor cursor = database.query(FamilyListEntry.TABLE_NAME,
                 null,
                 null,
                 null,
@@ -112,14 +144,14 @@ public class AddFriendFragment extends Fragment {
                 null);
 
         if (cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex(FamilyList.FamilyListEntry.COLUMN_ID);
-            int nameIndex = cursor.getColumnIndex(FamilyList.FamilyListEntry.COLUMN_NAME);
-            int emailIndex = cursor.getColumnIndex(FamilyList.FamilyListEntry.COLUMN_EMAIL);
-            int photoIndex = cursor.getColumnIndex(FamilyList.FamilyListEntry.COLUMN_PHOTO);
-            int latitide = cursor.getColumnIndex(FamilyList.FamilyListEntry.COLUMN_LATITUDE);
-            int longitude = cursor.getColumnIndex(FamilyList.FamilyListEntry.COLUMN_LONGITUDE);
+            int idIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_ID);
+            int nameIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_NAME);
+            int emailIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_EMAIL);
+            int photoIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_PHOTO);
+            int latitide = cursor.getColumnIndex(FamilyListEntry.COLUMN_LATITUDE);
+            int longitude = cursor.getColumnIndex(FamilyListEntry.COLUMN_LONGITUDE);
             do {
-                Log.d("mLog", "ID = " + cursor.getInt(idIndex) +
+                Log.d(TAG, "ID = " + cursor.getInt(idIndex) +
                         ", name = " + cursor.getString(nameIndex) +
                         ", email = " + cursor.getString(emailIndex)+
                         ", photo =  " + cursor.getString(photoIndex)+
@@ -127,7 +159,7 @@ public class AddFriendFragment extends Fragment {
                         ", longitude = " + cursor.getDouble(longitude));
             } while (cursor.moveToNext());
         } else
-            Log.d("mLog","0 rows");
+            Log.d(TAG,"0 rows");
 
         cursor.close();
 

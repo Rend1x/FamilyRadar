@@ -17,6 +17,8 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
@@ -35,6 +37,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -53,13 +56,15 @@ public class MapsActivity
         extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener,
         OnMapReadyCallback,
-        LocationListener{
+        LocationListener {
 
     private static final String TAG = "MapsActivity";
     public static final String ANONYMOUS = "anonymous";
     private final static int PERMISSION_ALL = 1;
-    private final static String[] PERMISSIONS = {android.Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION};
+    private final static String[] PERMISSIONS =
+            {   android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            };
 
     private GoogleMap mMap;
 
@@ -70,7 +75,6 @@ public class MapsActivity
 
     private GoogleApiClient mGoogleApiClient;
     private LocationManager locationManager;
-    private SupportMapFragment mapFragment;
     private double latitude;
     private double longitude;
     private MarkerOptions markerOptions;
@@ -95,19 +99,20 @@ public class MapsActivity
 
     }
 
+    @SuppressLint("MissingPermission")
     private void init() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main_menu);
         setSupportActionBar(toolbar);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        setUpMapIfNeeded();
     }
 
-    private void initSQl(){
+    private void initSQl() {
         familyPlace = new ArrayList<>();
         databaseHelper = new DatabaseHelper(this);
         user = new User();
         familyPlace.addAll(databaseHelper.getFamilyPlace());
-        setUpMapIfNeeded();
     }
 
     @Override
@@ -120,10 +125,10 @@ public class MapsActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
 
             case R.id.familyList:
-                Intent family = new Intent(this,FamilyListActivity.class);
+                Intent family = new Intent(this, FamilyListActivity.class);
                 startActivity(family);
                 break;
             case R.id.logout:
@@ -139,13 +144,11 @@ public class MapsActivity
         return true;
     }
 
-    private void updateDataToSql() {
-
-        user.setLatitude(latitude);
-        user.setLongitude(longitude);
-
-        databaseHelper.updateUser(user);
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
+
 
     @SuppressLint("MissingPermission")
     @Override
@@ -155,57 +158,8 @@ public class MapsActivity
         postDataToDataBase();
     }
 
-    private void setUpMapIfNeeded() {
-       mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-       mapFragment.getMapAsync(this);
-       locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-       markerOptions = new MarkerOptions().position(new LatLng(latitude,longitude)).title("You");
-        if (Build.VERSION.SDK_INT >= 23 && !isPermissionGranted()) {
-            requestPermissions(PERMISSIONS, PERMISSION_ALL);
-        } else requestLocation();
-        if (!isLocationEnabled())
-            showAlert(1);
-    }
 
-    @SuppressLint("MissingPermission")
-    private void requestLocation() {
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setPowerRequirement(Criteria.POWER_HIGH);
-        String provider = locationManager.getBestProvider(criteria, true);
-        locationManager.requestLocationUpdates(provider, 10000, 10, this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-
-    private void postDataToDataBase(){
-
-        user.setName(mFirebaseUser.getDisplayName());
-        user.setEmail(mFirebaseUser.getEmail());
-        user.setPhoto(mFirebaseUser.getPhotoUrl().toString());
-        user.setLatitude(latitude);
-        user.setLongitude(longitude);
-
-        if (databaseHelper.checkEmailUser(user.getEmail()) == true){
-
-            updateDataToSql();
-            Toast.makeText(this, "Refresh Successful!", Toast.LENGTH_SHORT).show();
-
-        }else {
-
-            databaseHelper.addUser(user);
-
-            Toast.makeText(this, "Add Successful!", Toast.LENGTH_SHORT).show();
-
-        }
-    }
-
-
-    private void isSignedIn(){
+    private void isSignedIn() {
 
         firebaseAuth = FirebaseAuth.getInstance();
         mUsername = ANONYMOUS;
@@ -233,25 +187,8 @@ public class MapsActivity
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        marker = mMap.addMarker(markerOptions);
-
-        MarkerOptions[] markerOptions = new MarkerOptions[familyPlace.size()];
-        for (int i = 0; i < familyPlace.size(); i++){
-            markerOptions[i] = new MarkerOptions().position(familyPlace.get(i));
-            mMap.addMarker(markerOptions[i]);
-
-        }
-    }
-
-    @Override
     public void onLocationChanged(Location location) {
-        LatLng myCoordinates = new LatLng(location.getLatitude(), location.getLongitude());
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        marker.setPosition(myCoordinates);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(myCoordinates));
+
     }
 
     @Override
@@ -269,57 +206,125 @@ public class MapsActivity
 
     }
 
+    @SuppressLint("MissingPermission")
+    private void setUpMapIfNeeded() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        if (Build.VERSION.SDK_INT >= 23 && !isPermissionGranted()) {
+            requestPermissions(PERMISSIONS, PERMISSION_ALL);
+        } else requestLocation();
+        isLocationEnabled();
+        Log.d(TAG,"myLocation " + latitude + longitude);
+        markerOptions = new MarkerOptions().position(new LatLng(latitude,longitude)).title(mUsername);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     public boolean isPermissionGranted() {
         if (checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED || checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            Log.v("mylog", "Permission is granted");
+            Log.v(TAG, "Permission is granted");
             return true;
         } else {
-            Log.v("mylog", "Permission not granted");
+            Log.v(TAG, "Permission not granted");
             return false;
         }
     }
-    private void showAlert(final int status) {
-        String message, title, btnText;
-        if (status == 1) {
-            message = "Your Locations Settings is set to 'Off'.\nPlease Enable Location to use this app";
-            title = "Enable Location";
-            btnText = "Location Settings";
-        } else {
-            message = "Please allow this app to access location!";
-            title = "Permission access";
-            btnText = "Grant";
-        }
 
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setCancelable(false);
-        dialog.setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(btnText, new DialogInterface.OnClickListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.M)
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        if (status == 1) {
-                            Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                            startActivity(myIntent);
-                        } else
-                            requestPermissions(PERMISSIONS, PERMISSION_ALL);
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        finish();
-                    }
-                });
-        dialog.show();
+    @SuppressLint("MissingPermission")
+    private void requestLocation() {
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setPowerRequirement(Criteria.POWER_HIGH);
+        String provider = locationManager.getBestProvider(criteria, true);
+        locationManager.requestLocationUpdates(provider, 10000, 10, this);
+        Location location = locationManager.getLastKnownLocation(provider);
+        if (location != null){
+
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+
+            Log.d(TAG,"myLocation " + latitude + longitude);
+
+        }
     }
 
     public boolean isLocationEnabled() {
         return  locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        marker = mMap.addMarker(markerOptions);
+        MarkerOptions[] markerOptions = new MarkerOptions[familyPlace.size()];
+        for (int i = 0; i < familyPlace.size(); i++) {
+            markerOptions[i] = new MarkerOptions().position(familyPlace.get(i));
+            mMap.addMarker(markerOptions[i]);
+        }
+    }
+    private void postDataToDataBase(){
+
+        user.setName(mFirebaseUser.getDisplayName());
+        user.setEmail(mFirebaseUser.getEmail());
+        user.setPhoto(mFirebaseUser.getPhotoUrl().toString());
+
+        user.setLatitude(latitude);
+        user.setLongitude(longitude);
+
+
+        if (databaseHelper.checkEmailUser(user.getEmail())){
+
+            updateDataToSql();
+            Toast.makeText(this, "Refresh Successful!", Toast.LENGTH_SHORT).show();
+
+        }else {
+
+            databaseHelper.addUser(user);
+
+            Toast.makeText(this, "Add Successful!", Toast.LENGTH_SHORT).show();
+
+        }
+
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+
+        Cursor cursor = database.query(UserList.UserListEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        if (cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_ID);
+            int nameIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_NAME);
+            int emailIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_EMAIL);
+            int photoIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_PHOTO);
+            int latitide = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_LATITUDE);
+            int longitude = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_LONGITUDE);
+            do {
+                Log.d(TAG, "ID = " + cursor.getInt(idIndex) +
+                        ", name = " + cursor.getString(nameIndex) +
+                        ", email = " + cursor.getString(emailIndex)+
+                        ", photo =  " + cursor.getString(photoIndex)+
+                        ", latitude = " + cursor.getDouble(latitide)+
+                        ", longitude = " + cursor.getDouble(longitude));
+            } while (cursor.moveToNext());
+        } else
+            Log.d(TAG,"0 rows");
+
+        cursor.close();
+    }
+
+    private void updateDataToSql() {
+
+        user.setLatitude(latitude);
+        user.setLongitude(longitude);
+
+        databaseHelper.updateUser(user,mFirebaseUser.getEmail());
+
     }
 
 }
