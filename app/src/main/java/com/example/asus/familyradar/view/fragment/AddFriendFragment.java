@@ -68,38 +68,6 @@ public class AddFriendFragment extends Fragment {
             }
         });
 
-        Log.d(TAG,"Массив " + listUser.size());
-
-        SQLiteDatabase database = databaseHelper.getWritableDatabase();
-
-        Cursor cursor = database.query(FamilyListEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
-
-        if (cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_ID);
-            int nameIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_NAME);
-            int emailIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_EMAIL);
-            int photoIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_PHOTO);
-            int latitide = cursor.getColumnIndex(FamilyListEntry.COLUMN_LATITUDE);
-            int longitude = cursor.getColumnIndex(FamilyListEntry.COLUMN_LONGITUDE);
-            do {
-                Log.d(TAG, "ID = " + cursor.getInt(idIndex) +
-                        ", name = " + cursor.getString(nameIndex) +
-                        ", email = " + cursor.getString(emailIndex)+
-                        ", photo =  " + cursor.getString(photoIndex)+
-                        ", latitude = " + cursor.getDouble(latitide)+
-                        ", longitude = " + cursor.getDouble(longitude));
-            } while (cursor.moveToNext());
-        } else
-            Log.d(TAG,"0 rows");
-
-        cursor.close();
-
         return view;
     }
 
@@ -132,37 +100,6 @@ public class AddFriendFragment extends Fragment {
             Toast.makeText(getActivity(),"Вы не можите внести свой аккаунт в список друзей",Toast.LENGTH_SHORT).show();
 
         }
-
-        SQLiteDatabase database = databaseHelper.getWritableDatabase();
-
-        Cursor cursor = database.query(FamilyListEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
-
-        if (cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_ID);
-            int nameIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_NAME);
-            int emailIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_EMAIL);
-            int photoIndex = cursor.getColumnIndex(FamilyListEntry.COLUMN_PHOTO);
-            int latitide = cursor.getColumnIndex(FamilyListEntry.COLUMN_LATITUDE);
-            int longitude = cursor.getColumnIndex(FamilyListEntry.COLUMN_LONGITUDE);
-            do {
-                Log.d(TAG, "ID = " + cursor.getInt(idIndex) +
-                        ", name = " + cursor.getString(nameIndex) +
-                        ", email = " + cursor.getString(emailIndex)+
-                        ", photo =  " + cursor.getString(photoIndex)+
-                        ", latitude = " + cursor.getDouble(latitide)+
-                        ", longitude = " + cursor.getDouble(longitude));
-            } while (cursor.moveToNext());
-        } else
-            Log.d(TAG,"0 rows");
-
-        cursor.close();
-
     }
 
     private void init(){
@@ -176,4 +113,13 @@ public class AddFriendFragment extends Fragment {
         databaseHelper = new DatabaseHelper(getContext());
         user = new User();
     }
+
+    private void delete() {
+
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+
+        database.delete(FamilyListEntry.TABLE_NAME, null, null);
+
+    }
+
 }

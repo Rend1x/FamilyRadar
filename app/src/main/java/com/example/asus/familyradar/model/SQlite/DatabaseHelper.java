@@ -14,6 +14,7 @@ import com.example.asus.familyradar.model.User;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -73,11 +74,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         final String ADD_FAMILY =
-                "INSERT INTO "
+                "INSERT OR REPLACE INTO "
                         + FamilyListEntry.TABLE_NAME + " ("
-                        + FamilyListEntry.COLUMN_EMAIL +", "
+                        + FamilyListEntry.COLUMN_NAME +", "
+                        + FamilyListEntry.COLUMN_EMAIL + ", "
                         + FamilyListEntry.COLUMN_PHOTO + ", "
-                        + FamilyListEntry.COLUMN_NAME + ", "
                         + FamilyListEntry.COLUMN_LATITUDE + ", "
                         + FamilyListEntry.COLUMN_LONGITUDE + ") "
                         + " SELECT "
@@ -90,6 +91,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         + " WHERE " + UserListEntry.COLUMN_USER_EMAIL + " =\'" + email + "\'";
 
         db.execSQL(ADD_FAMILY);
+    }
+
+    public void updateFamily(String email){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        final String UPDATE_FAMILY =
+                "UPDATE " + FamilyListEntry.TABLE_NAME
+                        + " SET "
+                        + FamilyListEntry.COLUMN_LATITUDE + " = ( SELECT " + UserListEntry.COLUMN_USER_LATITUDE
+                        + " FROM " + UserListEntry.TABLE_NAME
+                        + " WHERE " + UserListEntry.COLUMN_USER_EMAIL + " =\'" + email + "\' ) , "
+                        + FamilyListEntry.COLUMN_LONGITUDE + " = ( SELECT " + UserListEntry.COLUMN_USER_LONGITUDE
+                        + " FROM " + UserListEntry.TABLE_NAME
+                        + " WHERE " + UserListEntry.COLUMN_USER_EMAIL + " =\'" + email + "\' )";
+
+        db.execSQL(UPDATE_FAMILY);
+
+
     }
 
     public ArrayList<User> getAllBeneficiary() {
@@ -182,6 +202,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.close();
 
         return userList;
+
+    }
+
+    public ArrayList<String> getEmailFriends() {
+
+
+        String[] columns = {
+
+                FamilyListEntry.COLUMN_EMAIL
+
+        };
+
+
+        ArrayList<String> friendsList = new ArrayList<>();
+
+        database = this.getReadableDatabase();
+
+
+        Cursor cursor = database.query(FamilyListEntry.TABLE_NAME,
+                columns,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                User user = new User();
+
+                user.setEmail(cursor.getString(cursor.getColumnIndex(FamilyListEntry.COLUMN_EMAIL)));
+
+                friendsList.add(user.getEmail());
+
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        database.close();
+
+        return friendsList;
 
     }
 

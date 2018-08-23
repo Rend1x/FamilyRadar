@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,9 +14,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.asus.familyradar.R;
+import com.example.asus.familyradar.model.SQlite.UserList;
 import com.example.asus.familyradar.model.adapter.FamilyListAdapter;
 import com.example.asus.familyradar.model.SQlite.DatabaseHelper;
 import com.example.asus.familyradar.model.User;
@@ -30,10 +35,13 @@ import java.util.List;
 
 public class FamilyListActivity extends AppCompatActivity {
 
+    private TextView countFriends;
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ViewPageAdapter viewPageAdapter;
+    private ArrayList<User> selectFriends = new ArrayList<>();
+    private int counter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +84,11 @@ public class FamilyListActivity extends AppCompatActivity {
 
     private void initToolbar(){
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.family_toolbar);
         toolbar.inflateMenu(R.menu.main_menu);
         setSupportActionBar(toolbar);
+        countFriends = (TextView) findViewById(R.id.count_friend);
+        countFriends.setVisibility(View.GONE);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 

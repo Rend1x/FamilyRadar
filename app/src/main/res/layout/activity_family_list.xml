@@ -9,8 +9,8 @@
     android:orientation="vertical">
 
     <include
-        android:id="@+id/toolbar"
-        layout="@layout/app_bar"
+        android:id="@+id/family_toolbar"
+        layout="@layout/family_list_bar"
         >
 
     </include>

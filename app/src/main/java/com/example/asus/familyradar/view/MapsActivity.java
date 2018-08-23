@@ -30,6 +30,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.example.asus.familyradar.R;
 import com.example.asus.familyradar.model.SQlite.DatabaseHelper;
+import com.example.asus.familyradar.model.SQlite.FamilyList;
 import com.example.asus.familyradar.model.SQlite.UserList;
 import com.example.asus.familyradar.model.User;
 import com.google.android.gms.auth.api.Auth;
@@ -61,6 +62,7 @@ public class MapsActivity
     private static final String TAG = "MapsActivity";
     public static final String ANONYMOUS = "anonymous";
     private final static int PERMISSION_ALL = 1;
+    private final static int STATUS = 1;
     private final static String[] PERMISSIONS =
             {   android.Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -81,6 +83,7 @@ public class MapsActivity
     private Marker marker;
 
     private List<LatLng> familyPlace;
+    private List<String> familyUpdate;
 
     private Toolbar toolbar;
 
@@ -110,9 +113,12 @@ public class MapsActivity
 
     private void initSQl() {
         familyPlace = new ArrayList<>();
+        familyUpdate = new ArrayList<>();
         databaseHelper = new DatabaseHelper(this);
         user = new User();
         familyPlace.addAll(databaseHelper.getFamilyPlace());
+        familyUpdate.addAll(databaseHelper.getEmailFriends());
+        Log.d(TAG,"Email " + familyUpdate.size());
     }
 
     @Override
@@ -150,7 +156,12 @@ public class MapsActivity
     }
 
 
-    @SuppressLint("MissingPermission")
+    @Override
+    protected void onStart() {
+        super.onStart();
+        postDataToDataBase();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -206,20 +217,22 @@ public class MapsActivity
 
     }
 
-    @SuppressLint("MissingPermission")
+
     private void setUpMapIfNeeded() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         if (Build.VERSION.SDK_INT >= 23 && !isPermissionGranted()) {
             requestPermissions(PERMISSIONS, PERMISSION_ALL);
         } else requestLocation();
-        isLocationEnabled();
+        if (!isLocationEnabled()){
+           showAlert(STATUS);
+        }
         Log.d(TAG,"myLocation " + latitude + longitude);
         markerOptions = new MarkerOptions().position(new LatLng(latitude,longitude)).title(mUsername);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public boolean isPermissionGranted() {
+    private boolean isPermissionGranted() {
         if (checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED || checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -249,7 +262,7 @@ public class MapsActivity
         }
     }
 
-    public boolean isLocationEnabled() {
+    private boolean isLocationEnabled() {
         return  locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
@@ -264,6 +277,44 @@ public class MapsActivity
             mMap.addMarker(markerOptions[i]);
         }
     }
+
+    private void showAlert(final int status) {
+        String message, title, btnText;
+        if (status == STATUS) {
+            message = "Настройки вашего местоположения установлены на «Выкл.»." +
+                    "\nПожалуйста, включите определение вашего местоположения, чтобы использовать это приложение.";
+            title = "Включите определение местоположения";
+            btnText = "Найстройки локации";
+        } else {
+            message = "Пожалуйста, позвольте этому приложению получить доступ к местоположению!";
+            title = "Доступ к разрешениям";
+            btnText = "Позволить";
+        }
+
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setCancelable(false);
+        dialog.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(btnText, new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        if (status == 1) {
+                            Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivity(myIntent);
+                        } else
+                            requestPermissions(PERMISSIONS, PERMISSION_ALL);
+                    }
+                })
+                .setNegativeButton("Отклонить", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        finish();
+                    }
+                });
+        dialog.show();
+    }
+
     private void postDataToDataBase(){
 
         user.setName(mFirebaseUser.getDisplayName());
@@ -286,36 +337,6 @@ public class MapsActivity
             Toast.makeText(this, "Add Successful!", Toast.LENGTH_SHORT).show();
 
         }
-
-        SQLiteDatabase database = databaseHelper.getWritableDatabase();
-
-        Cursor cursor = database.query(UserList.UserListEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
-
-        if (cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_ID);
-            int nameIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_NAME);
-            int emailIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_EMAIL);
-            int photoIndex = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_PHOTO);
-            int latitide = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_LATITUDE);
-            int longitude = cursor.getColumnIndex(UserList.UserListEntry.COLUMN_USER_LONGITUDE);
-            do {
-                Log.d(TAG, "ID = " + cursor.getInt(idIndex) +
-                        ", name = " + cursor.getString(nameIndex) +
-                        ", email = " + cursor.getString(emailIndex)+
-                        ", photo =  " + cursor.getString(photoIndex)+
-                        ", latitude = " + cursor.getDouble(latitide)+
-                        ", longitude = " + cursor.getDouble(longitude));
-            } while (cursor.moveToNext());
-        } else
-            Log.d(TAG,"0 rows");
-
-        cursor.close();
     }
 
     private void updateDataToSql() {
@@ -325,6 +346,14 @@ public class MapsActivity
 
         databaseHelper.updateUser(user,mFirebaseUser.getEmail());
 
+        for (int i = 0; i < familyUpdate.size(); i++) {
+
+            user.setEmail(String.valueOf(familyUpdate.get(i)));
+
+            databaseHelper.updateFamily(user.getEmail());
+            Log.d(TAG,"Email 1 " + user.getEmail());
+
+        }
     }
 
 }

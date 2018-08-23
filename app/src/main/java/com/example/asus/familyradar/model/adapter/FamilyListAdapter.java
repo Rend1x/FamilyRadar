@@ -3,15 +3,19 @@ package com.example.asus.familyradar.model.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.asus.familyradar.R;
 import com.example.asus.familyradar.model.User;
+import com.example.asus.familyradar.view.FamilyListActivity;
+import com.example.asus.familyradar.view.fragment.FamilyListFragment;
 
 import java.util.List;
 
@@ -31,8 +35,8 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View v = LayoutInflater.from(context).inflate(R.layout.user_ithem, parent, false);
-        ViewHolder viewHolder = new ViewHolder(v);
+        View view = LayoutInflater.from(context).inflate(R.layout.user_ithem, parent, false);
+        ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
@@ -51,6 +55,9 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
                     .into(holder.userPhoto);
         }
 
+        holder.checkBox.setVisibility(View.VISIBLE);
+        holder.checkBox.setChecked(false);
+
     }
 
     @Override
@@ -58,11 +65,12 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
         return userList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder  {
 
         private TextView userName;
         private TextView userEmail;
         private CircleImageView userPhoto;
+        private CheckBox checkBox;
 
         private ViewHolder(View item) {
             super(item);
@@ -70,7 +78,9 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
             userName = (TextView) item.findViewById(R.id.itemNameUser);
             userEmail = (TextView) item.findViewById(R.id.itemEmail);
             userPhoto = (CircleImageView) item.findViewById(R.id.itemUserImageView);
+            checkBox = (CheckBox) item.findViewById(R.id.checkBox);
 
         }
+
     }
 }

@@ -48,4 +48,9 @@
         <item name="android:textSize">39sp</item>
     </style>
 
+    <style name="ToolbarText">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
 </resources>

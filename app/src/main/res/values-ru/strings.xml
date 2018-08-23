@@ -14,4 +14,6 @@
     <string name="title_activity_maps">Семейный Радар</string>
     <string name="add_friend_info">Введите E-mail друга</string>
     <string name="add_friend_name">Имя</string>
+    <string name="delete">Удалить</string>
+    <string name="user_delete">0 друзей выбранно</string>
 </resources>
