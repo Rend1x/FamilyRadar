@@ -113,13 +113,4 @@ public class AddFriendFragment extends Fragment {
         databaseHelper = new DatabaseHelper(getContext());
         user = new User();
     }
-
-    private void delete() {
-
-        SQLiteDatabase database = databaseHelper.getWritableDatabase();
-
-        database.delete(FamilyListEntry.TABLE_NAME, null, null);
-
-    }
-
 }

@@ -68,7 +68,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-
     public void addFamily(String email) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -93,7 +92,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(ADD_FAMILY);
     }
 
-    public void updateFamily(String email){
+    public void updatePositionFamily(String email){
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -109,6 +108,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL(UPDATE_FAMILY);
 
+
+    }
+
+    public void updateNameFamily(String name,String email){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(FamilyListEntry.COLUMN_NAME,name);
+
+        db.update(FamilyListEntry.TABLE_NAME, contentValues,"email " + " =\'" + email + "\'",null);
 
     }
 
@@ -316,5 +327,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         database.close();
         return checkEmailUser;
+    }
+
+    public void delete(String email) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(FamilyListEntry.TABLE_NAME, "email " + " =\'" + email + "\'", null);
+
     }
 }

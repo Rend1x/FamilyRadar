@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.example.asus.familyradar.R;
@@ -23,7 +25,7 @@ import com.example.asus.familyradar.view.FamilyListActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FamilyListFragment extends Fragment{
+public class FamilyListFragment extends Fragment {
 
     private View view;
     private RecyclerView recyclerView;
@@ -45,14 +47,15 @@ public class FamilyListFragment extends Fragment{
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_family_list,container,false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        familyListAdapter = new FamilyListAdapter(getActivity(),listUser);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        familyListAdapter = new FamilyListAdapter(getContext(),listUser);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(familyListAdapter);
-        databaseHelper = new DatabaseHelper(getActivity());
+        databaseHelper = new DatabaseHelper(getContext());
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         getDataFromSQLite();
         return view;
     }
+
 
     private void getDataFromSQLite() {
 
@@ -72,5 +75,4 @@ public class FamilyListFragment extends Fragment{
             }
         }.execute();
     }
-
 }

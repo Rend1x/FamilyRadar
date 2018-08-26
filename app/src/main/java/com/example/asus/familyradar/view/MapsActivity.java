@@ -64,8 +64,8 @@ public class MapsActivity
     private final static int PERMISSION_ALL = 1;
     private final static int STATUS = 1;
     private final static String[] PERMISSIONS =
-            {   android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
+            {android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
             };
 
     private GoogleMap mMap;
@@ -77,8 +77,12 @@ public class MapsActivity
 
     private GoogleApiClient mGoogleApiClient;
     private LocationManager locationManager;
-    private double latitude;
-    private double longitude;
+
+
+    //Location
+    private LatLng myLocation;
+    private double latitude,longitude;
+
     private MarkerOptions markerOptions;
     private Marker marker;
 
@@ -118,7 +122,7 @@ public class MapsActivity
         user = new User();
         familyPlace.addAll(databaseHelper.getFamilyPlace());
         familyUpdate.addAll(databaseHelper.getEmailFriends());
-        Log.d(TAG,"Email " + familyUpdate.size());
+        Log.d(TAG, "Email " + familyUpdate.size());
     }
 
     @Override
@@ -224,10 +228,10 @@ public class MapsActivity
         if (Build.VERSION.SDK_INT >= 23 && !isPermissionGranted()) {
             requestPermissions(PERMISSIONS, PERMISSION_ALL);
         } else requestLocation();
-        if (!isLocationEnabled()){
-           showAlert(STATUS);
+        if (!isLocationEnabled()) {
+            showAlert(STATUS);
         }
-        Log.d(TAG,"myLocation " + latitude + longitude);
+        Log.d(TAG, "myLocation " + latitude + longitude);
         markerOptions = new MarkerOptions().position(new LatLng(latitude,longitude)).title(mUsername);
     }
 
@@ -244,20 +248,22 @@ public class MapsActivity
         }
     }
 
-    @SuppressLint("MissingPermission")
+
     private void requestLocation() {
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         criteria.setPowerRequirement(Criteria.POWER_HIGH);
         String provider = locationManager.getBestProvider(criteria, true);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         locationManager.requestLocationUpdates(provider, 10000, 10, this);
-        Location location = locationManager.getLastKnownLocation(provider);
-        if (location != null){
+        Location myLastLocation = locationManager.getLastKnownLocation(provider);
+        if (myLastLocation != null){
 
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
-
-            Log.d(TAG,"myLocation " + latitude + longitude);
+            latitude = myLastLocation.getLatitude();
+            longitude = myLastLocation.getLongitude();
 
         }
     }
@@ -273,6 +279,7 @@ public class MapsActivity
         marker = mMap.addMarker(markerOptions);
         MarkerOptions[] markerOptions = new MarkerOptions[familyPlace.size()];
         for (int i = 0; i < familyPlace.size(); i++) {
+
             markerOptions[i] = new MarkerOptions().position(familyPlace.get(i));
             mMap.addMarker(markerOptions[i]);
         }
@@ -350,7 +357,7 @@ public class MapsActivity
 
             user.setEmail(String.valueOf(familyUpdate.get(i)));
 
-            databaseHelper.updateFamily(user.getEmail());
+            databaseHelper.updatePositionFamily(user.getEmail());
             Log.d(TAG,"Email 1 " + user.getEmail());
 
         }

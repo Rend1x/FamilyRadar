@@ -5,12 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.FamilyListActivity"
-    tools:layout_editor_absoluteY="25dp"
     android:orientation="vertical">
 
     <include
         android:id="@+id/family_toolbar"
-        layout="@layout/family_list_bar"
+        layout="@layout/app_bar"
         >
 
     </include>

@@ -34,8 +34,10 @@
         android:layout_gravity="center|bottom"
         android:textSize="16sp" />
 
-    <CheckBox
-        android:id="@+id/checkBox"
+    <ImageView
+        android:id="@+id/delete"
+        android:src="@drawable/ic_delete"
+        android:background="@color/colorAccent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|end"

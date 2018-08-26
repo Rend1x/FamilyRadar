@@ -35,12 +35,10 @@ import java.util.List;
 
 public class FamilyListActivity extends AppCompatActivity {
 
-    private TextView countFriends;
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ViewPageAdapter viewPageAdapter;
-    private ArrayList<User> selectFriends = new ArrayList<>();
     private int counter = 0;
 
     @Override
@@ -87,8 +85,6 @@ public class FamilyListActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.family_toolbar);
         toolbar.inflateMenu(R.menu.main_menu);
         setSupportActionBar(toolbar);
-        countFriends = (TextView) findViewById(R.id.count_friend);
-        countFriends.setVisibility(View.GONE);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
