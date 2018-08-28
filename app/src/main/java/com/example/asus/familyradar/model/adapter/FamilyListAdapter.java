@@ -114,7 +114,6 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
                     }
                 });
                 mDialog.show();
-                Toast.makeText(context,"Test Click " + String.valueOf(position),Toast.LENGTH_SHORT).show();
             }
         });
 

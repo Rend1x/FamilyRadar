@@ -12,9 +12,11 @@ import com.example.asus.familyradar.model.SQlite.UserList.UserListEntry;
 
 import com.example.asus.familyradar.model.User;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -108,7 +110,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL(UPDATE_FAMILY);
 
-
     }
 
     public void updateNameFamily(String name,String email){
@@ -160,6 +161,52 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 user.setPhoto(cursor.getString(cursor.getColumnIndex(FamilyListEntry.COLUMN_PHOTO)));
 
                 userList.add(user);
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        database.close();
+
+        return userList;
+
+    }
+
+    public ArrayList<String> getFamilyMaps() {
+
+
+        String[] columns = {
+
+                FamilyListEntry.COLUMN_NAME,
+                FamilyListEntry.COLUMN_LATITUDE,
+                FamilyListEntry.COLUMN_LONGITUDE,
+
+        };
+
+        String sortOrder =
+                FamilyListEntry.COLUMN_NAME + " ASC";
+
+        ArrayList<String> userList = new ArrayList<>();
+
+        database = this.getReadableDatabase();
+
+
+        Cursor cursor = database.query(FamilyListEntry.TABLE_NAME,
+                columns,
+                null,
+                null,
+                null,
+                null,
+                sortOrder);
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                User user = new User();
+
+                user.setName(cursor.getString(cursor.getColumnIndex(FamilyListEntry.COLUMN_NAME)));
+
+                userList.add(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                userList.add(user.getName());
 
             } while (cursor.moveToNext());
         }
@@ -271,7 +318,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(UserListEntry.COLUMN_USER_LONGITUDE,user.getLongitude());
 
         db.insert(UserListEntry.TABLE_NAME, null, contentValues);
-
 
     }
 

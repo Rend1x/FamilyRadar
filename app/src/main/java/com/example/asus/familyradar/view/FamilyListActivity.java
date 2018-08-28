@@ -39,7 +39,6 @@ public class FamilyListActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ViewPageAdapter viewPageAdapter;
-    private int counter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

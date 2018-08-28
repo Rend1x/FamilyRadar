@@ -1,6 +1,7 @@
 package com.example.asus.familyradar.view.fragment;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -10,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,8 @@ import android.widget.TextView;
 
 import com.example.asus.familyradar.R;
 import com.example.asus.familyradar.model.SQlite.DatabaseHelper;
+import com.example.asus.familyradar.model.SQlite.FamilyList;
+import com.example.asus.familyradar.model.SQlite.UserList;
 import com.example.asus.familyradar.model.User;
 import com.example.asus.familyradar.model.adapter.FamilyListAdapter;
 import com.example.asus.familyradar.view.FamilyListActivity;
@@ -54,6 +58,7 @@ public class FamilyListFragment extends Fragment {
         sqLiteDatabase = databaseHelper.getWritableDatabase();
         getDataFromSQLite();
         return view;
+
     }
 
 

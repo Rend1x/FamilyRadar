@@ -55,4 +55,9 @@
         <item name="android:layout_marginLeft">15dp</item>
     </style>
 
+
+    <style name="MySpinnerStyle">
+        <item name="android:background">@drawable/gradient_spinner</item>
+        <item name="popupTheme">@style/CustomMenu</item>
+    </style>
 </resources>

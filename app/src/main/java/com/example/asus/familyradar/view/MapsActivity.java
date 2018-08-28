@@ -1,13 +1,9 @@
 package com.example.asus.familyradar.view;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,32 +13,31 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.asus.familyradar.R;
 import com.example.asus.familyradar.model.SQlite.DatabaseHelper;
-import com.example.asus.familyradar.model.SQlite.FamilyList;
-import com.example.asus.familyradar.model.SQlite.UserList;
-import com.example.asus.familyradar.model.User;
+import com.example.asus.familyradar.model.utils.SQLUtils;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -80,19 +75,21 @@ public class MapsActivity
 
 
     //Location
-    private LatLng myLocation;
     private double latitude,longitude;
 
     private MarkerOptions markerOptions;
     private Marker marker;
 
     private List<LatLng> familyPlace;
-    private List<String> familyUpdate;
+    private List<String> familySpinner;
+    private List<LatLng> familySpinnerPos;
 
-    private Toolbar toolbar;
+    private Toolbar toolbarApp;
+    private Spinner spinner;
 
     private DatabaseHelper databaseHelper;
-    private User user;
+    private SQLUtils sqlUtils;
+
 
 
     @Override
@@ -103,26 +100,71 @@ public class MapsActivity
         isSignedIn();
         init();
         initSQl();
+        initSpinner();
 
     }
 
-    @SuppressLint("MissingPermission")
     private void init() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.inflateMenu(R.menu.main_menu);
-        setSupportActionBar(toolbar);
+        toolbarApp = (Toolbar) findViewById(R.id.toolbar);
+        toolbarApp.inflateMenu(R.menu.main_menu);
+        setSupportActionBar(toolbarApp);
+        sqlUtils = new SQLUtils(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         setUpMapIfNeeded();
     }
 
     private void initSQl() {
         familyPlace = new ArrayList<>();
-        familyUpdate = new ArrayList<>();
+        familySpinner = new ArrayList<>();
         databaseHelper = new DatabaseHelper(this);
-        user = new User();
         familyPlace.addAll(databaseHelper.getFamilyPlace());
-        familyUpdate.addAll(databaseHelper.getEmailFriends());
-        Log.d(TAG, "Email " + familyUpdate.size());
+        familySpinner.addAll(databaseHelper.getFamilyMaps());
+    }
+
+    private void initSpinner(){
+
+        spinner = (Spinner) findViewById(R.id.spinner);
+
+        ArrayAdapter<String> adapter;
+
+        adapter = new ArrayAdapter<>(this,R.layout.spinner_item,familySpinner);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if (parent.getItemAtPosition(position).equals(FirebaseAuth.getInstance().getCurrentUser().getDisplayName())){
+
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude,longitude)));
+
+                }else {
+
+                    familySpinnerPos = new ArrayList<>();
+
+                    String item = parent.getItemAtPosition(position).toString();
+
+                    familySpinnerPos.addAll(sqlUtils.selectFriend(item));
+
+                    for (int i = 0; i < familySpinnerPos.size();i++ ){
+
+                        LatLng friendLocation = familySpinnerPos.get(i);
+
+                        mMap.animateCamera(CameraUpdateFactory.newLatLng(friendLocation));
+
+                    }
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     @Override
@@ -154,23 +196,12 @@ public class MapsActivity
         return true;
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        postDataToDataBase();
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
-        postDataToDataBase();
+        sqlUtils.postDataToDataBase(latitude, longitude);
     }
 
 
@@ -188,10 +219,7 @@ public class MapsActivity
             mUsername = mFirebaseUser.getDisplayName();
         }
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API)
-                .build();
+        buildGoogleApiClient();
 
     }
 
@@ -255,10 +283,9 @@ public class MapsActivity
         criteria.setPowerRequirement(Criteria.POWER_HIGH);
         String provider = locationManager.getBestProvider(criteria, true);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        locationManager.requestLocationUpdates(provider, 10000, 10, this);
+                && ActivityCompat.checkSelfPermission
+                (this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){ return; }
+        locationManager.requestLocationUpdates(provider, 5000, 10, this);
         Location myLastLocation = locationManager.getLastKnownLocation(provider);
         if (myLastLocation != null){
 
@@ -277,9 +304,9 @@ public class MapsActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         marker = mMap.addMarker(markerOptions);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude,longitude)));
         MarkerOptions[] markerOptions = new MarkerOptions[familyPlace.size()];
         for (int i = 0; i < familyPlace.size(); i++) {
-
             markerOptions[i] = new MarkerOptions().position(familyPlace.get(i));
             mMap.addMarker(markerOptions[i]);
         }
@@ -322,45 +349,14 @@ public class MapsActivity
         dialog.show();
     }
 
-    private void postDataToDataBase(){
+    private void buildGoogleApiClient(){
 
-        user.setName(mFirebaseUser.getDisplayName());
-        user.setEmail(mFirebaseUser.getEmail());
-        user.setPhoto(mFirebaseUser.getPhotoUrl().toString());
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
 
-        user.setLatitude(latitude);
-        user.setLongitude(longitude);
-
-
-        if (databaseHelper.checkEmailUser(user.getEmail())){
-
-            updateDataToSql();
-            Toast.makeText(this, "Refresh Successful!", Toast.LENGTH_SHORT).show();
-
-        }else {
-
-            databaseHelper.addUser(user);
-
-            Toast.makeText(this, "Add Successful!", Toast.LENGTH_SHORT).show();
-
-        }
     }
-
-    private void updateDataToSql() {
-
-        user.setLatitude(latitude);
-        user.setLongitude(longitude);
-
-        databaseHelper.updateUser(user,mFirebaseUser.getEmail());
-
-        for (int i = 0; i < familyUpdate.size(); i++) {
-
-            user.setEmail(String.valueOf(familyUpdate.get(i)));
-
-            databaseHelper.updatePositionFamily(user.getEmail());
-            Log.d(TAG,"Email 1 " + user.getEmail());
-
-        }
-    }
-
 }

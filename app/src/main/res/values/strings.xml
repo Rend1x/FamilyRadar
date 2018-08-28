@@ -15,5 +15,5 @@
     <string name="add_friend_name">Name</string>
     <string name="delete">Delete</string>
     <string name="save_edit_user">Save changes</string>
-    <string name="user_delete">0 friends selected</string>
+    <string name="show_friend">Show:</string>
 </resources>

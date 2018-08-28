@@ -16,4 +16,5 @@
     <string name="add_friend_name">Имя</string>
     <string name="delete">Удалить</string>
     <string name="save_edit_user">Сохранить изменения</string>
+    <string name="show_friend">Показать:</string>
 </resources>

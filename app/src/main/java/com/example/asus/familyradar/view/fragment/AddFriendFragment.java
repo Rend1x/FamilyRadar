@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.asus.familyradar.R;
 import com.example.asus.familyradar.model.SQlite.DatabaseHelper;
 import com.example.asus.familyradar.model.User;
+import com.example.asus.familyradar.model.utils.SQLUtils;
 import com.example.asus.familyradar.view.FamilyListActivity;
 import com.example.asus.familyradar.model.SQlite.FamilyList.FamilyListEntry;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,12 +36,8 @@ public class AddFriendFragment extends Fragment {
 
     private Button mAddFriend;
 
-    private FirebaseAuth mFirebaseAuth;
-    private FirebaseUser mFirebaseUser;
+    private SQLUtils sqlUtils;
 
-    private User user;
-    private List<User> listUser;
-    private DatabaseHelper databaseHelper;
 
     public AddFriendFragment() {
     }
@@ -48,8 +45,6 @@ public class AddFriendFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        listUser = new ArrayList<>();
 
     }
 
@@ -59,58 +54,23 @@ public class AddFriendFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_add_friend,container,false);
 
         init();
-        initObjects();
 
         mAddFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                postDataToSQLite();
+                sqlUtils.postDataToSQLite(friendEmail.getText().toString());
             }
         });
 
         return view;
     }
 
-    private void postDataToSQLite() {
 
-        user.setEmail(friendEmail.getText().toString().trim());
-
-        Log.d(TAG,"Email " + user.getEmail());
-
-        if (databaseHelper.checkEmailUser(user.getEmail())&& !databaseHelper.checkEmailFamily(user.getEmail())){
-
-            databaseHelper.addFamily(user.getEmail());
-
-            Toast.makeText(getActivity(),"Такой email есть",Toast.LENGTH_SHORT).show();
-            Intent accountsIntent = new Intent(getActivity(), FamilyListActivity.class);
-            Toast.makeText(getActivity(), "Add Successful!", Toast.LENGTH_SHORT)
-                    .show();
-            startActivity(accountsIntent);
-
-        }else if(!databaseHelper.checkEmailUser(user.getEmail())){
-
-            Toast.makeText(getActivity(),"Нет такого пользователя",Toast.LENGTH_SHORT).show();
-
-        }else if (databaseHelper.checkEmailFamily(user.getEmail())){
-
-            Toast.makeText(getActivity(),"Этот пользователь есть в списке друзей",Toast.LENGTH_SHORT).show();
-
-        } else if (mFirebaseUser.getEmail().equals(user.getEmail())){
-
-            Toast.makeText(getActivity(),"Вы не можите внести свой аккаунт в список друзей",Toast.LENGTH_SHORT).show();
-
-        }
-    }
 
     private void init(){
         friendEmail = view.findViewById(R.id.enter_email_friend);
         mAddFriend = view.findViewById(R.id.addFriendButton);
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mFirebaseUser = mFirebaseAuth.getCurrentUser();
-    }
-
-    private void initObjects() {
-        databaseHelper = new DatabaseHelper(getContext());
-        user = new User();
+        friendEmail.setText(friendEmail.getText().toString().trim());
+        sqlUtils = new SQLUtils(getContext());
     }
 }
