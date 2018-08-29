@@ -76,7 +76,6 @@ public class MapsActivity
 
     //Location
     private double latitude,longitude;
-
     private MarkerOptions markerOptions;
     private Marker marker;
 
@@ -111,6 +110,7 @@ public class MapsActivity
         sqlUtils = new SQLUtils(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         setUpMapIfNeeded();
+        sqlUtils.postDataToDataBase(latitude, longitude);
     }
 
     private void initSQl() {
@@ -149,10 +149,13 @@ public class MapsActivity
 
                     familySpinnerPos.addAll(sqlUtils.selectFriend(item));
 
+                    MarkerOptions[] markerOptions = new MarkerOptions[familyPlace.size()];
+
                     for (int i = 0; i < familySpinnerPos.size();i++ ){
 
                         LatLng friendLocation = familySpinnerPos.get(i);
-
+                        markerOptions[i] = new MarkerOptions().position(familySpinnerPos.get(i));
+                        mMap.addMarker(markerOptions[i]).setTitle(item);
                         mMap.animateCamera(CameraUpdateFactory.newLatLng(friendLocation));
 
                     }
@@ -231,11 +234,13 @@ public class MapsActivity
 
     @Override
     public void onLocationChanged(Location location) {
-
+        LatLng myLocation = new LatLng(location.getLatitude(),location.getLongitude());
+        marker.setPosition(myLocation);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
+    public void onStatusChanged(String provider, final int status, Bundle extras) {
 
     }
 
@@ -288,10 +293,8 @@ public class MapsActivity
         locationManager.requestLocationUpdates(provider, 5000, 10, this);
         Location myLastLocation = locationManager.getLastKnownLocation(provider);
         if (myLastLocation != null){
-
             latitude = myLastLocation.getLatitude();
             longitude = myLastLocation.getLongitude();
-
         }
     }
 
@@ -303,6 +306,9 @@ public class MapsActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        mMap.clear();
+
         marker = mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude,longitude)));
         MarkerOptions[] markerOptions = new MarkerOptions[familyPlace.size()];
@@ -354,7 +360,6 @@ public class MapsActivity
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
-                .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
 
