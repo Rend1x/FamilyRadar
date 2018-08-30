@@ -76,6 +76,7 @@ public class MapsActivity
 
     //Location
     private double latitude,longitude;
+    private LatLng myLocation;
     private MarkerOptions markerOptions;
     private Marker marker;
 
@@ -129,7 +130,7 @@ public class MapsActivity
 
         adapter = new ArrayAdapter<>(this,R.layout.spinner_item,familySpinner);
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
         spinner.setAdapter(adapter);
 
@@ -137,9 +138,9 @@ public class MapsActivity
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                if (parent.getItemAtPosition(position).equals(FirebaseAuth.getInstance().getCurrentUser().getDisplayName())){
+                if (parent.getItemAtPosition(position).equals(mUsername+"(you)")){
 
-                    mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude,longitude)));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(myLocation));
 
                 }else {
 
@@ -182,6 +183,9 @@ public class MapsActivity
 
         switch (item.getItemId()) {
 
+            case R.id.refresh:
+                sqlUtils.updateDataToSql(latitude,longitude);
+                break;
             case R.id.familyList:
                 Intent family = new Intent(this, FamilyListActivity.class);
                 startActivity(family);
@@ -234,9 +238,8 @@ public class MapsActivity
 
     @Override
     public void onLocationChanged(Location location) {
-        LatLng myLocation = new LatLng(location.getLatitude(),location.getLongitude());
+        myLocation = new LatLng(location.getLatitude(),location.getLongitude());
         marker.setPosition(myLocation);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
     }
 
     @Override
@@ -265,7 +268,7 @@ public class MapsActivity
             showAlert(STATUS);
         }
         Log.d(TAG, "myLocation " + latitude + longitude);
-        markerOptions = new MarkerOptions().position(new LatLng(latitude,longitude)).title(mUsername);
+        markerOptions = new MarkerOptions().position(new LatLng(latitude,longitude)).title(mUsername+"(you)");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

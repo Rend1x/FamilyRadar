@@ -63,12 +63,14 @@ public class SQLUtils {
         }
     }
 
-    private void updateDataToSql(double latitude, double longitude) {
+    public void updateDataToSql(double latitude, double longitude) {
 
         user.setLatitude(latitude);
         user.setLongitude(longitude);
 
         databaseHelper.updateUser(user,FirebaseAuth.getInstance().getCurrentUser().getEmail());
+
+        Toast.makeText(context, "Refresh Successful!", Toast.LENGTH_SHORT).show();
 
         for (int i = 0; i < familyUpdate.size(); i++) {
 
@@ -76,6 +78,7 @@ public class SQLUtils {
 
             databaseHelper.updatePositionFamily(user.getEmail());
 
+            Toast.makeText(context, "Refresh Successful!", Toast.LENGTH_SHORT).show();
         }
     }
 

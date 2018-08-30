@@ -55,9 +55,15 @@
         <item name="android:layout_marginLeft">15dp</item>
     </style>
 
-
     <style name="MySpinnerStyle">
         <item name="android:background">@drawable/gradient_spinner</item>
-        <item name="popupTheme">@style/CustomMenu</item>
+    </style>
+
+    <style name="spinnerDropDownItemStyle">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:padding">3dp</item>
     </style>
 </resources>

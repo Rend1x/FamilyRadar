@@ -205,7 +205,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 user.setName(cursor.getString(cursor.getColumnIndex(FamilyListEntry.COLUMN_NAME)));
 
-                userList.add(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                userList.add(FirebaseAuth.getInstance().getCurrentUser().getDisplayName() + "(you)");
                 userList.add(user.getName());
 
             } while (cursor.moveToNext());
