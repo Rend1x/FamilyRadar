@@ -3,6 +3,7 @@ package com.example.asus.familyradar.model.adapter;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
@@ -22,8 +23,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.asus.familyradar.R;
+import com.example.asus.familyradar.databinding.UserItemBinding;
 import com.example.asus.familyradar.model.SQlite.DatabaseHelper;
 import com.example.asus.familyradar.model.User;
+import com.example.asus.familyradar.model.bindingHelper.UserClick;
 import com.example.asus.familyradar.view.FamilyListActivity;
 
 import java.util.List;
@@ -46,9 +49,9 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_ithem, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view);
-        return viewHolder;
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        UserItemBinding binding = DataBindingUtil.inflate(inflater,R.layout.user_ithem,parent,false);
+        return new ViewHolder(binding);
     }
 
     @Override
@@ -56,33 +59,25 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
 
         databaseHelper = new DatabaseHelper(context);
 
-        holder.userName.setText(userList.get(position).getName());
-        holder.userEmail.setText(userList.get(position).getEmail());
+        holder.bind(userList.get(position));
 
-        if (userList.get(position).getPhoto() == null) {
-            holder.userPhoto.setImageDrawable(ContextCompat.getDrawable(context,
-                    R.drawable.ic_account_circle_black_36dp));
-        } else {
-            Glide.with(holder.userPhoto.getContext())
-                    .load(userList.get(position).getPhoto())
-                    .into(holder.userPhoto);
-        }
+        final UserItemBinding binding = holder.getBinding();
 
-        holder.deleteFriend.setOnClickListener(new View.OnClickListener() {
+        binding.setHelper(new UserClick() {
             @Override
-            public void onClick(View v) {
-                databaseHelper.delete((String) holder.userEmail.getText());
+            public void deleteItem() {
+                databaseHelper.delete(userList.get(position).getEmail());
                 userList.remove(position);
                 notifyDataSetChanged();
             }
-        });
 
-        mDialog = new Dialog(context);
-        mDialog.setContentView(R.layout.dialog_contact);
-        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void showFriend() {
+
+                mDialog = new Dialog(context);
+                mDialog.setContentView(R.layout.dialog_contact);
+                mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
                 final EditText dialogName = mDialog.findViewById(R.id.dialog_edit_name_friend);
                 final TextView dialogEmail = mDialog.findViewById(R.id.dialog_email);
                 CircleImageView dialogPhoto = mDialog.findViewById(R.id.dialog_photo_friend);
@@ -93,6 +88,7 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
                 Glide.with(dialogPhoto.getContext())
                         .load(userList.get(position).getPhoto())
                         .into(dialogPhoto);
+
                 dialogSave.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -104,6 +100,7 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
 
                     }
                 });
+
                 dialogDelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -114,6 +111,7 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
                     }
                 });
                 mDialog.show();
+
             }
         });
 
@@ -126,21 +124,21 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
 
     public class ViewHolder extends RecyclerView.ViewHolder  {
 
-        private TextView userName;
-        private TextView userEmail;
-        private CircleImageView userPhoto;
-        private ImageView deleteFriend;
-        private CardView cardView;
+       UserItemBinding binding;
 
-        private ViewHolder(View item) {
-            super(item);
+       public ViewHolder(UserItemBinding binding){
+           super(binding.getRoot());
+           this.binding = binding;
+       }
 
-            userName = (TextView) item.findViewById(R.id.itemNameUser);
-            userEmail = (TextView) item.findViewById(R.id.itemEmail);
-            userPhoto = (CircleImageView) item.findViewById(R.id.itemUserImageView);
-            deleteFriend = (ImageView) item.findViewById(R.id.delete);
-            cardView = (CardView) item.findViewById(R.id.card_view);
-        }
+       public void bind(User user){
+           binding.setUser(user);
+           binding.executePendingBindings();
+       }
+
+       public UserItemBinding getBinding(){
+           return binding;
+       }
 
     }
 }

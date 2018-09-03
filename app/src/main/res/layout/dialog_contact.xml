@@ -65,7 +65,7 @@
         android:id="@+id/dialog_photo_friend"
         android:layout_width="135dp"
         android:layout_height="135dp"
-        android:src="@drawable/ic_account_circle_black_36dp"
+        android:src="@drawable/ic_account_circle"
         android:padding="10dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"/>

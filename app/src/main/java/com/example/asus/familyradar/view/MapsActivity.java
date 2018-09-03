@@ -211,6 +211,12 @@ public class MapsActivity
         sqlUtils.postDataToDataBase(latitude, longitude);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "lat: " + latitude + " long " + longitude);
+        sqlUtils.postDataToDataBase(latitude, longitude);
+    }
 
     private void isSignedIn() {
 
@@ -238,8 +244,13 @@ public class MapsActivity
 
     @Override
     public void onLocationChanged(Location location) {
-        myLocation = new LatLng(location.getLatitude(),location.getLongitude());
-        marker.setPosition(myLocation);
+        if (location != null) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+            myLocation = new LatLng(latitude,longitude);
+            marker.setPosition(myLocation);
+            sqlUtils.postDataToDataBase(latitude,longitude);
+        }
     }
 
     @Override
@@ -309,9 +320,7 @@ public class MapsActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         mMap.clear();
-
         marker = mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude,longitude)));
         MarkerOptions[] markerOptions = new MarkerOptions[familyPlace.size()];
