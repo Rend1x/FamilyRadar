@@ -15,8 +15,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {

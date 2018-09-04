@@ -1,8 +1,6 @@
 package com.example.asus.familyradar.model.bindingHelper;
 
-import android.content.Context;
 import android.databinding.BindingAdapter;
-import android.graphics.drawable.Drawable;
 
 import com.bumptech.glide.Glide;
 
@@ -16,5 +14,4 @@ public class BindingHelper {
                 .load(url)
                 .into(view);
     }
-
 }

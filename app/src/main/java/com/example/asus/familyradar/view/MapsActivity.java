@@ -77,6 +77,7 @@ public class MapsActivity
     //Location
     private double latitude,longitude;
     private LatLng myLocation;
+    private LatLng myLastLocation;
     private MarkerOptions markerOptions;
     private Marker marker;
 
@@ -140,7 +141,11 @@ public class MapsActivity
 
                 if (parent.getItemAtPosition(position).equals(mUsername+"(you)")){
 
-                    mMap.animateCamera(CameraUpdateFactory.newLatLng(myLocation));
+                    if (myLocation != null){
+                        mMap.animateCamera(CameraUpdateFactory.newLatLng(myLocation));
+                    }else{
+                        mMap.animateCamera(CameraUpdateFactory.newLatLng(myLastLocation));
+                    }
 
                 }else {
 
@@ -305,10 +310,11 @@ public class MapsActivity
                 && ActivityCompat.checkSelfPermission
                 (this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){ return; }
         locationManager.requestLocationUpdates(provider, 5000, 10, this);
-        Location myLastLocation = locationManager.getLastKnownLocation(provider);
-        if (myLastLocation != null){
-            latitude = myLastLocation.getLatitude();
-            longitude = myLastLocation.getLongitude();
+        Location myLastLocationn = locationManager.getLastKnownLocation(provider);
+        if (myLastLocationn != null){
+            latitude = myLastLocationn.getLatitude();
+            longitude = myLastLocationn.getLongitude();
+            myLastLocation = new LatLng(latitude,longitude);
         }
     }
 
