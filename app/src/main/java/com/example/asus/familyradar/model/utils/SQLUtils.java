@@ -47,12 +47,9 @@ public class SQLUtils {
         user.setLatitude(latitude);
         user.setLongitude(longitude);
 
-
-
         if (databaseHelper.checkEmailUser(user.getEmail())){
 
             updateDataToSql(latitude,longitude);
-            Toast.makeText(context, "Refresh Successful!", Toast.LENGTH_SHORT).show();
 
         }else {
 
@@ -70,15 +67,11 @@ public class SQLUtils {
 
         databaseHelper.updateUser(user,FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
-        Toast.makeText(context, "Refresh Successful!", Toast.LENGTH_SHORT).show();
-
         for (int i = 0; i < familyUpdate.size(); i++) {
 
             user.setEmail(String.valueOf(familyUpdate.get(i)));
 
             databaseHelper.updatePositionFamily(user.getEmail());
-
-            Toast.makeText(context, "Refresh Successful!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -88,26 +81,25 @@ public class SQLUtils {
 
         user.setEmail(email);
 
-        if (databaseHelper.checkEmailUser(user.getEmail())&& !databaseHelper.checkEmailFamily(user.getEmail())){
+        if (FirebaseAuth.getInstance().getCurrentUser().getEmail().equals(user.getEmail())){
 
-            databaseHelper.addFamily(user.getEmail());
+            Toast.makeText(context,"Вы не можите внести свой аккаунт в список друзей",Toast.LENGTH_SHORT).show();
 
-            Toast.makeText(context,"Такой email есть",Toast.LENGTH_SHORT).show();
-            Intent accountsIntent = new Intent(context, FamilyListActivity.class);
-            Toast.makeText(context, "Add Successful!", Toast.LENGTH_SHORT).show();
-            context.startActivity(accountsIntent);
-
-        }else if(!databaseHelper.checkEmailUser(user.getEmail())){
+        } else if(!databaseHelper.checkEmailUser(user.getEmail())){
 
             Toast.makeText(context,"Нет такого пользователя",Toast.LENGTH_SHORT).show();
 
-        }else if (databaseHelper.checkEmailFamily(user.getEmail())){
+        } else if (databaseHelper.checkEmailFamily(user.getEmail())){
 
             Toast.makeText(context,"Этот пользователь есть в списке друзей",Toast.LENGTH_SHORT).show();
 
-        } else if (FirebaseAuth.getInstance().getCurrentUser().getEmail().equals(user.getEmail())){
+        } else if (databaseHelper.checkEmailUser(user.getEmail())&& !databaseHelper.checkEmailFamily(user.getEmail())){
 
-            Toast.makeText(context,"Вы не можите внести свой аккаунт в список друзей",Toast.LENGTH_SHORT).show();
+            databaseHelper.addFamily(user.getEmail());
+
+            Toast.makeText(context,"Добавления прошло успешно",Toast.LENGTH_SHORT).show();
+            Intent accountsIntent = new Intent(context, FamilyListActivity.class);
+            context.startActivity(accountsIntent);
 
         }
     }

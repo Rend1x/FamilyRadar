@@ -1,14 +1,10 @@
 <resources>
     <string name="app_name">Family Radar</string>
-    <string name="app_info">Please enter your name and E-mail:</string>
-    <string name="login">Login</string>
-    <string name="your_name">Your name</string>
     <string name="email">E-mail</string>
     <string name="title_activity_maps">Family Radar</string>
     <string name="family_list">Family List</string>
     <string name="logout">Logout</string>
     <string name="add_friend">Add</string>
-    <string name="or">OR</string>
     <string name="authGoogle">Sign in through Google</string>
     <string name="title_activity_login">Sign in</string>
     <string name="add_friend_info">Enter email your friend</string>

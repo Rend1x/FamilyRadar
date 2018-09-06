@@ -43,7 +43,6 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         UserItemBinding binding = DataBindingUtil.inflate(inflater,R.layout.user_ithem,parent,false);
         return new ViewHolder(binding);

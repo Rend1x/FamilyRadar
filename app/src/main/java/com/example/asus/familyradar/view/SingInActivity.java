@@ -27,35 +27,21 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class SingInActivity extends AppCompatActivity  implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener{
 
     private static final String TAG = "SingInActivity";
-    private static final int RC_SIGN_IN = 9001;
+    private static final int RC_SIGN_IN = 1001;
 
     private GoogleApiClient mGoogleApiClient;
     private static GoogleSignInOptions googleSignInOptions;
 
     private FirebaseAuth mFirebaseAuth;
 
-    private EditText yourName;
-    private EditText yourEmail;
-
-    private Button mSingIn;
     private Button singInGoogle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sing_in);
-
         init();
-
-        mSingIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
         singInGoogle.setOnClickListener(this);
-
     }
 
     @Override
@@ -71,10 +57,7 @@ public class SingInActivity extends AppCompatActivity  implements GoogleApiClien
 
     private void init(){
 
-        yourName = (EditText) findViewById(R.id.enter_name);
-        yourEmail = (EditText) findViewById(R.id.enter_email);
         singInGoogle = (Button) findViewById(R.id.login_button_google);
-        mSingIn = (Button) findViewById(R.id.singInButton);
 
         googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))

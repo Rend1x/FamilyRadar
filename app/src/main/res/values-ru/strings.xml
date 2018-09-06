@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Семейный Радар</string>
-    <string name="app_info" translatable="false">Пожайлуста введите ваше имя и E-mail</string>
-    <string name="login" translatable="false">Авторизоваться</string>
-    <string name="your_name" translatable="false">Ваше имя</string>
     <string name="email" translatable="false">"E-mail"</string>
     <string name="family_list" translatable="false">Список семьи</string>
     <string name="logout" translatable="false">Выйти</string>
     <string name="add_friend" translatable="false">Добавить</string>
-    <string name="or" translatable="false">ИЛИ</string>
     <string name="authGoogle" translatable="false">Войти через Google</string>
     <string name="title_activity_login" translatable="false">Войти</string>
     <string name="title_activity_maps">Семейный Радар</string>

@@ -44,7 +44,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.crash.FirebaseCrash;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,6 +122,7 @@ public class MapsActivity
         familySpinner = new ArrayList<>();
         databaseHelper = new DatabaseHelper(this);
         familyPlace.addAll(databaseHelper.getFamilyPlace());
+        familySpinner.clear();
         familySpinner.addAll(databaseHelper.getFamilyMaps());
     }
 
@@ -161,6 +164,7 @@ public class MapsActivity
 
                         LatLng friendLocation = familySpinnerPos.get(i);
                         markerOptions[i] = new MarkerOptions().position(familySpinnerPos.get(i));
+                        mMap.clear();
                         mMap.addMarker(markerOptions[i]).setTitle(item);
                         mMap.animateCamera(CameraUpdateFactory.newLatLng(friendLocation));
 
@@ -216,13 +220,6 @@ public class MapsActivity
         sqlUtils.postDataToDataBase(latitude, longitude);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(TAG, "lat: " + latitude + " long " + longitude);
-        sqlUtils.postDataToDataBase(latitude, longitude);
-    }
-
     private void isSignedIn() {
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -236,9 +233,7 @@ public class MapsActivity
         } else {
             mUsername = mFirebaseUser.getDisplayName();
         }
-
         buildGoogleApiClient();
-
     }
 
     @Override
@@ -329,10 +324,15 @@ public class MapsActivity
         mMap.clear();
         marker = mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude,longitude)));
+        setFamilyPlace();
+    }
+
+    private void setFamilyPlace(){
         MarkerOptions[] markerOptions = new MarkerOptions[familyPlace.size()];
         for (int i = 0; i < familyPlace.size(); i++) {
             markerOptions[i] = new MarkerOptions().position(familyPlace.get(i));
-            mMap.addMarker(markerOptions[i]);
+            mMap.clear();
+            marker =  mMap.addMarker(markerOptions[i]);
         }
     }
 
