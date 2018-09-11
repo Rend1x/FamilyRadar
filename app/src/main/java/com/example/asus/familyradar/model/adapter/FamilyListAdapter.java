@@ -54,6 +54,8 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
 
         databaseHelper = new DatabaseHelper(context);
         mDialog = new Dialog(context);
+        mDialog.setContentView(R.layout.dialog_contact);
+        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         holder.bind(userList.get(position));
 
@@ -70,8 +72,6 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
             @Override
             public void showFriend() {
 
-                mDialog.setContentView(R.layout.dialog_contact);
-                mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 final EditText dialogName = mDialog.findViewById(R.id.dialog_edit_name_friend);
                 final TextView dialogEmail = mDialog.findViewById(R.id.dialog_email);
                 CircleImageView dialogPhoto = mDialog.findViewById(R.id.dialog_photo_friend);
