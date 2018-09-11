@@ -33,7 +33,6 @@ import com.example.asus.familyradar.model.utils.SQLUtils;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,9 +43,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.crash.FirebaseCrash;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -158,17 +155,7 @@ public class MapsActivity
 
                     familySpinnerPos.addAll(sqlUtils.selectFriend(item));
 
-                    MarkerOptions[] markerOptions = new MarkerOptions[familyPlace.size()];
-
-                    for (int i = 0; i < familySpinnerPos.size();i++ ){
-
-                        LatLng friendLocation = familySpinnerPos.get(i);
-                        markerOptions[i] = new MarkerOptions().position(familySpinnerPos.get(i));
-                        mMap.clear();
-                        mMap.addMarker(markerOptions[i]).setTitle(item);
-                        mMap.animateCamera(CameraUpdateFactory.newLatLng(friendLocation));
-
-                    }
+                    setFamilyPlace(familySpinnerPos);
 
                 }
             }
@@ -278,7 +265,6 @@ public class MapsActivity
         if (!isLocationEnabled()) {
             showAlert(STATUS);
         }
-        Log.d(TAG, "myLocation " + latitude + longitude);
         markerOptions = new MarkerOptions().position(new LatLng(latitude,longitude)).title(mUsername+"(you)");
     }
 
@@ -324,15 +310,16 @@ public class MapsActivity
         mMap.clear();
         marker = mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude,longitude)));
-        setFamilyPlace();
+
+        setFamilyPlace(familyPlace);
     }
 
-    private void setFamilyPlace(){
-        MarkerOptions[] markerOptions = new MarkerOptions[familyPlace.size()];
-        for (int i = 0; i < familyPlace.size(); i++) {
-            markerOptions[i] = new MarkerOptions().position(familyPlace.get(i));
-            mMap.clear();
-            marker =  mMap.addMarker(markerOptions[i]);
+    private void setFamilyPlace(List<LatLng> family){
+        MarkerOptions[] markerOptions = new MarkerOptions[family.size()];
+        for (int i = 0; i < family.size(); i++) {
+            markerOptions[i] = new MarkerOptions().position(family.get(i));
+            mMap.addMarker(markerOptions[i]);
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(family.get(i)));
         }
     }
 

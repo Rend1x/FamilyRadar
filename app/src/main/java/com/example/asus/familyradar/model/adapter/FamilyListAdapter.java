@@ -21,6 +21,7 @@ import com.example.asus.familyradar.R;
 import com.example.asus.familyradar.databinding.UserItemBinding;
 import com.example.asus.familyradar.model.SQlite.DatabaseHelper;
 import com.example.asus.familyradar.model.User;
+import com.example.asus.familyradar.model.bindingHelper.BindingHelper;
 import com.example.asus.familyradar.model.bindingHelper.UserClick;
 import com.example.asus.familyradar.view.FamilyListActivity;
 
@@ -52,6 +53,7 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
         databaseHelper = new DatabaseHelper(context);
+        mDialog = new Dialog(context);
 
         holder.bind(userList.get(position));
 
@@ -68,10 +70,8 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
             @Override
             public void showFriend() {
 
-                mDialog = new Dialog(context);
                 mDialog.setContentView(R.layout.dialog_contact);
                 mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
                 final EditText dialogName = mDialog.findViewById(R.id.dialog_edit_name_friend);
                 final TextView dialogEmail = mDialog.findViewById(R.id.dialog_email);
                 CircleImageView dialogPhoto = mDialog.findViewById(R.id.dialog_photo_friend);
@@ -79,9 +79,7 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
                 Button dialogDelete = mDialog.findViewById(R.id.dialog_delete_friend);
                 dialogName.setText(userList.get(position).getName());
                 dialogEmail.setText(userList.get(position).getEmail());
-                Glide.with(dialogPhoto.getContext())
-                        .load(userList.get(position).getPhoto())
-                        .into(dialogPhoto);
+                BindingHelper.loadImage(dialogPhoto,userList.get(position).getPhoto());
 
                 dialogSave.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -105,7 +103,6 @@ public class FamilyListAdapter extends RecyclerView.Adapter<FamilyListAdapter.Vi
                     }
                 });
                 mDialog.show();
-
             }
         });
 

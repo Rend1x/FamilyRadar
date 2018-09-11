@@ -1,18 +1,15 @@
 package com.example.asus.familyradar.model.utils;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
-
+import com.example.asus.familyradar.R;
 import com.example.asus.familyradar.model.SQlite.DatabaseHelper;
 import com.example.asus.familyradar.model.SQlite.FamilyList;
 import com.example.asus.familyradar.model.User;
-import com.example.asus.familyradar.view.FamilyListActivity;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +19,7 @@ public class SQLUtils {
     private User user;
     private Context context;
     private List<String> familyUpdate;
+    private String[] columns;
 
 
     public SQLUtils(Context context) {
@@ -33,7 +31,6 @@ public class SQLUtils {
         user = new User();
         databaseHelper = new DatabaseHelper(context);
         familyUpdate.addAll(databaseHelper.getEmailFriends());
-
     }
 
     public void postDataToDataBase(double latitude, double longitude){
@@ -48,15 +45,9 @@ public class SQLUtils {
         user.setLongitude(longitude);
 
         if (databaseHelper.checkEmailUser(user.getEmail())){
-
             updateDataToSql(latitude,longitude);
-
         }else {
-
             databaseHelper.addUser(user);
-
-            Toast.makeText(context, "Add Successful!", Toast.LENGTH_SHORT).show();
-
         }
     }
 
@@ -83,23 +74,21 @@ public class SQLUtils {
 
         if (FirebaseAuth.getInstance().getCurrentUser().getEmail().equals(user.getEmail())){
 
-            Toast.makeText(context,"Вы не можите внести свой аккаунт в список друзей",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,R.string.add_error_1,Toast.LENGTH_SHORT).show();
 
         } else if(!databaseHelper.checkEmailUser(user.getEmail())){
 
-            Toast.makeText(context,"Нет такого пользователя",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,R.string.add_error_2,Toast.LENGTH_SHORT).show();
 
         } else if (databaseHelper.checkEmailFamily(user.getEmail())){
 
-            Toast.makeText(context,"Этот пользователь есть в списке друзей",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,R.string.add_error_3,Toast.LENGTH_SHORT).show();
 
         } else if (databaseHelper.checkEmailUser(user.getEmail())&& !databaseHelper.checkEmailFamily(user.getEmail())){
 
             databaseHelper.addFamily(user.getEmail());
 
-            Toast.makeText(context,"Добавления прошло успешно",Toast.LENGTH_SHORT).show();
-            Intent accountsIntent = new Intent(context, FamilyListActivity.class);
-            context.startActivity(accountsIntent);
+            Toast.makeText(context, R.string.add_successful,Toast.LENGTH_SHORT).show();
 
         }
     }
@@ -107,7 +96,7 @@ public class SQLUtils {
     public ArrayList<LatLng> selectFriend(String name){
 
 
-        String[] columns = {
+        columns = new String[]{
 
                 FamilyList.FamilyListEntry.COLUMN_LATITUDE,
                 FamilyList.FamilyListEntry.COLUMN_LONGITUDE,

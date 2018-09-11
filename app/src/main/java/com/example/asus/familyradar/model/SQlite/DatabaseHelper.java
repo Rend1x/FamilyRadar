@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private SQLiteDatabase database;
-
+    private String[] columns;
     private static final int DATABASE_VERSION = 3;
 
     private static final String DATABASE_NAME = "FamilyList.db";
@@ -125,7 +125,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<User> getAllBeneficiary() {
 
 
-        String[] columns = {
+        columns = new String[] {
 
                 FamilyListEntry.COLUMN_NAME,
                 FamilyListEntry.COLUMN_EMAIL,
@@ -172,7 +172,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<String> getFamilyMaps() {
 
 
-        String[] columns = {
+        columns = new String[] {
 
                 FamilyListEntry.COLUMN_NAME,
                 FamilyListEntry.COLUMN_LATITUDE,
@@ -218,7 +218,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<LatLng> getFamilyPlace() {
 
 
-        String[] columns = {
+        columns = new String[] {
 
                 FamilyListEntry.COLUMN_LATITUDE,
                 FamilyListEntry.COLUMN_LONGITUDE,
@@ -264,7 +264,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<String> getEmailFriends() {
 
 
-        String[] columns = {
+        columns = new String[] {
 
                 FamilyListEntry.COLUMN_EMAIL
 

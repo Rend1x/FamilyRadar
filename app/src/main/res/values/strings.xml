@@ -12,4 +12,8 @@
     <string name="delete">Delete</string>
     <string name="save_edit_user">Save changes</string>
     <string name="show_friend">Show:</string>
+    <string name="add_error_1">You can not add your account to your friends list</string>
+    <string name="add_error_2">No such user</string>
+    <string name="add_error_3">This user is in the Friends list</string>
+    <string name="add_successful">Additions were successful</string>
 </resources>

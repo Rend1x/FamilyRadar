@@ -19,16 +19,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccent"
-            android:textSize="28sp"
-            android:textStyle="bold"
+            android:theme="@style/MyTextDialogName"
             android:layout_marginTop="90dp"/>
 
         <TextView
             android:id="@+id/dialog_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorAccent"
-            android:textSize="22sp"
+            android:theme="@style/MyTextDialogEmail"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="10dp"/>
 

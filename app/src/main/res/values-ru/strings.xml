@@ -13,4 +13,8 @@
     <string name="delete">Удалить</string>
     <string name="save_edit_user">Сохранить изменения</string>
     <string name="show_friend">Показать:</string>
+    <string name="add_error_1">Вы не можите внести свой аккаунт в список друзей</string>
+    <string name="add_error_2">Нет такого пользователя</string>
+    <string name="add_error_3">Этот пользователь есть в списке друзей</string>
+    <string name="add_successful">Добавления прошло успешно</string>
 </resources>

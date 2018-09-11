@@ -25,7 +25,7 @@ public class AddFriendFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        sqlUtils = new SQLUtils(getContext());
     }
 
     @Override
@@ -47,6 +47,5 @@ public class AddFriendFragment extends Fragment {
         friendEmail = view.findViewById(R.id.enter_email_friend);
         mAddFriend = view.findViewById(R.id.addFriendButton);
         friendEmail.setText(friendEmail.getText().toString().trim());
-        sqlUtils = new SQLUtils(getContext());
     }
 }
