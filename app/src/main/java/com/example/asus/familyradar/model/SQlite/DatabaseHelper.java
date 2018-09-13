@@ -20,7 +20,31 @@ import java.util.ArrayList;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private SQLiteDatabase database;
-    private String[] columns;
+    private final static String[] columnsAdapter = new String[] {
+
+            FamilyListEntry.COLUMN_NAME,
+            FamilyListEntry.COLUMN_EMAIL,
+            FamilyListEntry.COLUMN_PHOTO,
+
+    };
+    private final static String[] columnsAddNameSpinner = new String[] {
+
+        FamilyListEntry.COLUMN_NAME
+
+    };
+
+    private final static String[] columnsAddLocFamily = new String[] {
+
+            FamilyListEntry.COLUMN_LATITUDE,
+            FamilyListEntry.COLUMN_LONGITUDE,
+
+    };
+
+    private final static String[] columnsAddEmailUser = new String[] {
+
+            FamilyListEntry.COLUMN_EMAIL
+
+    };
     private static final int DATABASE_VERSION = 3;
 
     private static final String DATABASE_NAME = "FamilyList.db";
@@ -124,15 +148,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<User> getAllBeneficiary() {
 
-
-        columns = new String[] {
-
-                FamilyListEntry.COLUMN_NAME,
-                FamilyListEntry.COLUMN_EMAIL,
-                FamilyListEntry.COLUMN_PHOTO,
-
-        };
-
         String sortOrder =
                 FamilyListEntry.COLUMN_NAME + " ASC";
 
@@ -142,7 +157,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         Cursor cursor = database.query(FamilyListEntry.TABLE_NAME,
-                columns,
+                columnsAdapter,
                 null,
                 null,
                 null,
@@ -171,15 +186,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<String> getFamilyMaps() {
 
-
-        columns = new String[] {
-
-                FamilyListEntry.COLUMN_NAME,
-                FamilyListEntry.COLUMN_LATITUDE,
-                FamilyListEntry.COLUMN_LONGITUDE,
-
-        };
-
         String sortOrder =
                 FamilyListEntry.COLUMN_NAME + " ASC";
 
@@ -189,7 +195,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         Cursor cursor = database.query(FamilyListEntry.TABLE_NAME,
-                columns,
+                columnsAddNameSpinner,
                 null,
                 null,
                 null,
@@ -202,7 +208,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 User user = new User();
 
                 user.setName(cursor.getString(cursor.getColumnIndex(FamilyListEntry.COLUMN_NAME)));
-
                 userList.add(FirebaseAuth.getInstance().getCurrentUser().getDisplayName() + "(you)");
                 userList.add(user.getName());
 
@@ -218,13 +223,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<LatLng> getFamilyPlace() {
 
 
-        columns = new String[] {
-
-                FamilyListEntry.COLUMN_LATITUDE,
-                FamilyListEntry.COLUMN_LONGITUDE,
-
-        };
-
         String sortOrder =
                 FamilyListEntry.COLUMN_NAME + " ASC";
 
@@ -234,7 +232,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         Cursor cursor = database.query(FamilyListEntry.TABLE_NAME,
-                columns,
+                columnsAddLocFamily,
                 null,
                 null,
                 null,
@@ -263,21 +261,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<String> getEmailFriends() {
 
-
-        columns = new String[] {
-
-                FamilyListEntry.COLUMN_EMAIL
-
-        };
-
-
         ArrayList<String> friendsList = new ArrayList<>();
 
         database = this.getReadableDatabase();
 
-
         Cursor cursor = database.query(FamilyListEntry.TABLE_NAME,
-                columns,
+                columnsAddEmailUser,
                 null,
                 null,
                 null,

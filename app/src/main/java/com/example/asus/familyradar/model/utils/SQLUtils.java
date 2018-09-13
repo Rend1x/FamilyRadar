@@ -19,7 +19,12 @@ public class SQLUtils {
     private User user;
     private Context context;
     private List<String> familyUpdate;
-    private String[] columns;
+    private final static String[] columnsAddFriendLoc = new String[]{
+
+        FamilyList.FamilyListEntry.COLUMN_LATITUDE,
+                FamilyList.FamilyListEntry.COLUMN_LONGITUDE,
+
+    };
 
 
     public SQLUtils(Context context) {
@@ -66,42 +71,7 @@ public class SQLUtils {
         }
     }
 
-    public void postDataToSQLite(String email) {
-
-        init();
-
-        user.setEmail(email);
-
-        if (FirebaseAuth.getInstance().getCurrentUser().getEmail().equals(user.getEmail())){
-
-            Toast.makeText(context,R.string.add_error_1,Toast.LENGTH_SHORT).show();
-
-        } else if(!databaseHelper.checkEmailUser(user.getEmail())){
-
-            Toast.makeText(context,R.string.add_error_2,Toast.LENGTH_SHORT).show();
-
-        } else if (databaseHelper.checkEmailFamily(user.getEmail())){
-
-            Toast.makeText(context,R.string.add_error_3,Toast.LENGTH_SHORT).show();
-
-        } else if (databaseHelper.checkEmailUser(user.getEmail())&& !databaseHelper.checkEmailFamily(user.getEmail())){
-
-            databaseHelper.addFamily(user.getEmail());
-
-            Toast.makeText(context, R.string.add_successful,Toast.LENGTH_SHORT).show();
-
-        }
-    }
-
     public ArrayList<LatLng> selectFriend(String name){
-
-
-        columns = new String[]{
-
-                FamilyList.FamilyListEntry.COLUMN_LATITUDE,
-                FamilyList.FamilyListEntry.COLUMN_LONGITUDE,
-
-        };
 
         String where =
                 FamilyList.FamilyListEntry.COLUMN_NAME  + " =\'" + name + "\'";
@@ -111,7 +81,7 @@ public class SQLUtils {
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
         Cursor cursor = database.query(FamilyList.FamilyListEntry.TABLE_NAME,
-                columns,
+                columnsAddFriendLoc,
                 where,
                 null,
                 null,
